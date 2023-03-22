@@ -1,0 +1,160 @@
+
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/15/23  16:30:54 PAGE   1
+SOURCE FILE: SORT-ANU                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8
+
+    1                    IDENTIFICATION DIVISION.
+    2                    PROGRAM-ID. SORT-ANU.
+    3                    ENVIRONMENT DIVISION.
+    4                    INPUT-OUTPUT SECTION.
+    5                    FILE-CONTROL.
+    6                        SELECT CLIENTES ASSIGN TO DISK.
+    7                        SELECT ARC-SOR ASSIGN TO DISK.
+    8                        SELECT SOR-TEM ASSIGN TO SORT.
+    9                    DATA DIVISION.
+   10                    FILE SECTION.
+   11                    FD CLIENTES.
+   12                    01 REG-CLI.
+   13                        03 ID-CLIENTE PIC 9(03).
+   14                        03 NOM-CLI    PIC X(30).
+   15                        03 CLA-TAR    PIC 9.
+   16                        03 NOM-TAR    PIC X(20).
+   17                        03 ANUA       PIC 9(05)V99.
+   18                        03 FEC-ING    PIC 9(08).
+   19
+   20                    FD ARC-SOR.
+   21                    01 REG-CLI-A.
+   22                        03 ID-CLIENTE-A PIC 9(03).
+   23                        03 NOM-CLI-A    PIC X(30).
+   24                        03 CLA-TAR-A    PIC 9.
+   25                        03 NOM-TAR-A    PIC X(20).
+   26                        03 ANUA-A       PIC 9(05)V99.
+   27                        03 FEC-ING-A    PIC 9(08).
+   28
+   29                    SD SOR-TEM.
+   30                    01 REG-CLI-S.
+   31                        03 ID-CLIENTE-S PIC 9(03).
+   32                        03 NOM-CLI-S    PIC X(30).
+   33                        03 CLA-TAR-S    PIC 9.
+   34                        03 NOM-TAR-S    PIC X(20).
+   35                        03 ANUA-S       PIC 9(05)V99.
+   36                        03 FEC-ING-S    PIC 9(08).
+   37
+   38
+   39                    WORKING-STORAGE SECTION.
+   40                    01 WKS-AN-INI       PIC 9(08).
+   41                    01 WKS-AN-FIN      PIC 9(08).
+   42
+   43                    77 WKS-FIN            PIC 9.
+   44                    77 WKS-NOM-TAR           PIC X(20).
+   45
+   46                    PROCEDURE DIVISION.
+   47    000002          PRINCIPAL SECTION.
+   48    000005          INICIO.
+   49    000008              SORT SOR-TEM
+   50                        ASCENDING ANUA-S FEC-ING-S
+   51                        INPUT PROCEDURE 1000-ORDENA-ARCHIVO
+   52                        GIVING ARC-SOR.
+   53                   *     OUTPUT PROCEDURE 2000-GENERA-ARCHIVO
+   54    000015              STOP RUN.
+   55
+   56    000019          1000-ORDENA-ARCHIVO SECTION.
+   57    000022          INICIO-ORDENA.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/15/23  16:30:54 PAGE   2
+SOURCE FILE: SORT-ANU                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   SORT-ANU
+
+   58    000025              PERFORM 1200-INICIO.
+   59    000028              PERFORM 1500-PROCESO UNTIL WKS-FIN = 1.
+   60    000039              PERFORM 1700-FIN.
+   61    000042              GO TO 1800-FIN-SECTION.
+   62
+   63    000045          1200-INICIO.
+   64    000048              OPEN INPUT CLIENTES.
+   65    000055              DISPLAY SPACES LINE 01 POSITION 01 ERASE.
+   66
+   67    000069              READ CLIENTES
+   68                            AT END MOVE 1 TO WKS-FIN.
+   69
+   70    000084              DISPLAY "ELIGE FECHA INICIAL (YYYYMMDD): "
+   71                            LINE 10 POSITION 05.
+   72    000097              ACCEPT WKS-AN-INI LINE 10 POSITION 50.
+   73    000109              DISPLAY "ELIGE FECHA FINAL (YYYYMMDD): "
+   74                            LINE 11 POSITION 05.
+   75    000121              ACCEPT WKS-AN-FIN LINE 11 POSITION 50.
+   76
+   77    000135          1500-PROCESO.
+   78
+   79    000138              IF FEC-ING >= WKS-AN-INI AND FEC-ING <= WKS-AN-FIN
+   80                            MOVE REG-CLI TO REG-CLI-S
+   81                            RELEASE REG-CLI-S.
+   82
+   83    000161              READ CLIENTES
+   84                            AT END MOVE 1 TO WKS-FIN.
+   85
+   86    000179          1700-FIN.
+   87
+   88    000182              CLOSE CLIENTES.
+   89
+   90    000189              INITIALIZE WKS-FIN.
+   91
+   92    000197          1800-FIN-SECTION.
+   93    000200              EXIT.
+   94
+   95    000205          2000-GENERA-ARCHIVO  SECTION.
+   96    000208          INICIO-GEN-ARC.
+   97    000211              PERFORM 2200-INICIO.
+   98    000214              PERFORM 2500-PROCESO UNTIL WKS-FIN = 1.
+   99    000225              PERFORM 2700-FIN.
+  100    000228              GO TO 2800-FIN-SECTION.
+  101
+  102    000231          2200-INICIO.
+  103
+  104    000234              OPEN OUTPUT ARC-SOR
+  105
+  106    000241              RETURN SOR-TEM
+  107                            AT END MOVE 1 TO WKS-FIN.
+  108
+  109    000256          2500-PROCESO.
+  110
+  111    000259              MOVE REG-CLI-S TO REG-CLI-A.
+  112    000266              WRITE REG-CLI-A.
+  113
+  114    000273              RETURN SOR-TEM
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/15/23  16:30:54 PAGE   3
+SOURCE FILE: SORT-ANU                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   SORT-ANU
+
+  115                            AT END MOVE 1 TO WKS-FIN.
+  116
+  117
+  118    000288          2700-FIN.
+  119
+  120    000291              CLOSE ARC-SOR.
+  121
+  122
+  123    000300          2800-FIN-SECTION.
+  124    000303              EXIT.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/15/23  16:30:54 PAGE   4
+SOURCE FILE: SORT-ANU                   OPTIONS: L
+
+PROGRAM SUMMARY STATISTICS                                                                           SORT-ANU
+
+
+READ ONLY SIZE =                       838 (X"00000346") BYTES
+
+READ/WRITE SIZE =                      818 (X"00000332") BYTES
+
+OVERLAYABLE SEGMENT SIZE =               0 (X"00000000") BYTES
+
+TOTAL SIZE (LESS I/O BUFFERS) =       1656 (X"00000678") BYTES      124 LINES
+
+    0 ERRORS         0 WARNINGS     FOR PROGRAM SORT-ANU
+
+
+
+OBJECT VERSION LEVEL =   1
+

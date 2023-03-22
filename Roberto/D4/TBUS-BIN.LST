@@ -1,0 +1,68 @@
+
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/16/23  17:38:24 PAGE   1
+SOURCE FILE: TBUS-BIN                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8
+
+    1                    IDENTIFICATION DIVISION.
+    2                    PROGRAM-ID. TBUS-BIN.
+    3                    ENVIRONMENT DIVISION.
+    4
+    5                    DATA DIVISION.
+    6                    WORKING-STORAGE SECTION.
+    7
+    8
+    9
+   10                    01 WKS-ANUALIDADES.
+   11                        03 FILLER    PIC 9(06)V99 VALUE 23456.
+   12                        03 FILLER    PIC 9(06)V99 VALUE 87654.
+   13                        03 FILLER    PIC 9(06)V99 VALUE 56543.
+   14
+   15                       01 WKS-T-A.
+   16                        03 FILLER    PIC X(12) VALUE "CREDITO23456".
+   17                        03 FILLER    PIC X(12) VALUE "DEBITO 87654".
+   18                        03 FILLER    PIC X(12) VALUE "NOMINA 56543".
+   19
+   20                    01 T-ANUAL REDEFINES WKS-T-A.
+   21                        03 T-TAR-ANU OCCURS 3 TIMES
+   22                            ASCENDING KEY IS T-TAR INDEXED BY WKS-I.
+   23                            05 T-TAR PIC X(7).
+   24                            05 T-ANU PIC 9(05).
+   25
+   26
+   27
+   28                    01 WKS-TIPO-TAR-U  PIC X(7).
+   29
+   30                    PROCEDURE DIVISION.
+   31    000002          INICIO.
+   32    000005                 DISPLAY SPACES ERASE.
+   33    000013              DISPLAY "TIPO DE TARJETA: " LINE 10 POSITION 05.
+   34    000025              ACCEPT WKS-TIPO-TAR-U LINE 10 POSITION 35.
+   35    000037              DISPLAY "ANUALIDAD: " LINE 11 POSITION 05.
+   36
+   37
+   38    000049              SEARCH ALL T-TAR-ANU
+   39                        AT END DISPLAY "NO EXISTE" LINE 12 POSITION 05
+   40                        WHEN T-TAR (WKS-I) = WKS-TIPO-TAR-U
+   41                        DISPLAY T-ANU (WKS-I) LINE 11 POSITION 35.
+   42    000103              STOP RUN.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/16/23  17:38:24 PAGE   2
+SOURCE FILE: TBUS-BIN                   OPTIONS: L
+
+PROGRAM SUMMARY STATISTICS                                                                           TBUS-BIN
+
+
+READ ONLY SIZE =                       466 (X"000001D2") BYTES
+
+READ/WRITE SIZE =                       84 (X"00000054") BYTES
+
+OVERLAYABLE SEGMENT SIZE =               0 (X"00000000") BYTES
+
+TOTAL SIZE (LESS I/O BUFFERS) =        550 (X"00000226") BYTES       42 LINES
+
+    0 ERRORS         0 WARNINGS     FOR PROGRAM TBUS-BIN
+
+
+
+OBJECT VERSION LEVEL =   1
+

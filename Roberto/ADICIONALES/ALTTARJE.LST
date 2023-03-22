@@ -1,0 +1,181 @@
+
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/21/23  18:27:50 PAGE   1
+SOURCE FILE: ALTTARJE                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8
+
+    1                    IDENTIFICATION DIVISION.
+    2                    PROGRAM-ID. ALTTARJE.
+    3                    ENVIRONMENT DIVISION.
+    4                    INPUT-OUTPUT SECTION.
+    5                    FILE-CONTROL.
+    6                        SELECT CLIENTES ASSIGN TO DISK.
+    7                        SELECT REP-TAC ASSIGN TO PRINTER.
+    8                    DATA DIVISION.
+    9                    FILE SECTION.
+   10                    FD CLIENTES.
+   11                    01 REG-CLI.
+   12                        03 ID-CLIENTE PIC 9(03).
+   13                        03 NOM-CLI    PIC X(30).
+   14                        03 CLA-TAR    PIC 9.
+   15                        03 NOM-TAR    PIC X(20).
+   16                        03 ANUA       PIC 9(05)V99.
+   17                        03 FEC-ING    PIC 9(08).
+   18
+   19                    FD REP-TAC.
+   20                    01 LINEA          PIC X(132).
+   21
+   22                    WORKING-STORAGE SECTION.
+   23                   *-----------TABLAS----------------*
+   24                    01 WKS-MESES.
+   25                        03 FILLER    PIC X(12) VALUE "ENERO     01".
+   26                        03 FILLER    PIC X(12) VALUE "FEBRERO   02".
+   27                        03 FILLER    PIC X(12) VALUE "MARZO     03".
+   28                        03 FILLER    PIC X(12) VALUE "ABRIL     04".
+   29                        03 FILLER    PIC X(12) VALUE "MAYO      05".
+   30                        03 FILLER    PIC X(12) VALUE "JUNIO     06".
+   31                        03 FILLER    PIC X(12) VALUE "JULIO     07".
+   32                        03 FILLER    PIC X(12) VALUE "AGOSTO    08".
+   33                        03 FILLER    PIC X(12) VALUE "SEPTIEMBRE09".
+   34                        03 FILLER    PIC X(12) VALUE "OCTUBRE   10".
+   35                        03 FILLER    PIC X(12) VALUE "NOVIEMBRE 11".
+   36                        03 FILLER    PIC X(12) VALUE "DICIEMBRE 12".
+   37
+   38                    01 T-MESES REDEFINES WKS-MESES.
+   39                        03 T-MESE OCCURS 12 TIMES.
+   40                            05 T-MES PIC X(10).
+   41                            05 T-NME PIC 99.
+   42
+   43                    01 WKS-ANIOS.
+   44                        03 FILLER    PIC 9999 VALUE 2020.
+   45                        03 FILLER    PIC 9999 VALUE 2021.
+   46                        03 FILLER    PIC 9999 VALUE 2022.
+   47                        03 FILLER    PIC 9999 VALUE 2023.
+   48
+   49                    01 T-ANIOS REDEFINES WKS-ANIOS.
+   50                        03 T-ANIO OCCURS 4 TIMES.
+   51                            05 T-AN PIC 9999.
+   52
+   53                    01 T-TARJETAS.
+   54                        03 T-TAR OCCURS 3 TIMES PIC X(20).
+   55
+   56                    01 T-CLIENTES.
+   57                        03 T-ANO OCCURS 4 TIMES.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/21/23  18:27:50 PAGE   2
+SOURCE FILE: ALTTARJE                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   ALTTARJE
+
+   58                            04 T-TIPO OCCURS 3 TIMES.
+   59                                05 T-MON OCCURS 12 TIMES.
+   60                                    07 T-CLTS PIC 99.
+   61
+   62
+   63                   *-----------VARIABLES-------------*
+   64
+   65                    77 WKS-FIN            PIC 9.
+   66                    77 WKS-DESC           PIC X.
+   67                    77 WKS-I              PIC 9.
+   68                    77 WKS-J              PIC 99.
+   69                    77 WKS-K              PIC 99.
+   70                    77 WKS-L              PIC 99.
+   71                    77 WKS-M              PIC 99.
+   72                    77 WKS-N              PIC 99.
+   73
+   74
+   75                    01 WKS-SPLITFE.
+   76                        03 WKS-SANO       PIC 9999.
+   77                        03 WKS-SMES       PIC 99.
+   78                        03 FILLER         PIC 99.
+   79
+   80                    PROCEDURE DIVISION.
+   81    000002          INICIO.
+   82    000005              PERFORM 1000-INICIO.
+   83    000008              PERFORM 2000-PROCESO.
+   84    000011              PERFORM 3000-FIN.
+   85    000014              STOP RUN.
+   86
+   87    000017          1000-INICIO.
+   88    000020              OPEN OUTPUT REP-TAC.
+   89    000027              OPEN INPUT CLIENTES.
+   90
+   91
+   92    000034              READ CLIENTES
+   93                        AT END MOVE 1 TO WKS-FIN.
+   94
+   95    000052          2000-PROCESO.
+   96
+   97    000055              PERFORM 2100-LEER-CARGAR UNTIL WKS-FIN = 1.
+   98
+   99    000066              PERFORM 2200-GENERA-REPORTE.
+  100
+  101    000071          2100-LEER-CARGAR.
+  102    000074              MOVE FEC-ING TO WKS-SPLITFE.
+  103
+  104    000081              PERFORM 2120-LLENA-TABLA
+  105                            VARYING WKS-I FROM 1 BY 1 UNTIL WKS-I > 4
+  106                            AFTER WKS-J FROM 1 BY 1 UNTIL WKS-J > 3
+  107                            AFTER WKS-K FROM 1 BY 1 UNTIL WKS-K > 12.
+  108
+  109    000146              READ CLIENTES
+  110                        AT END MOVE 1 TO WKS-FIN.
+  111
+  112    000164          2120-LLENA-TABLA.
+  113    000167              IF T-TAR (WKS-I) = SPACES
+  114                            MOVE NOM-TAR TO T-TAR (WKS-I)
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/21/23  18:27:50 PAGE   3
+SOURCE FILE: ALTTARJE                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   ALTTARJE
+
+  115                            ADD 1 TO T-CLTS (WKS-I WKS-J WKS-K).
+  116
+  117    000204              IF T-TAR (WKS-I) = NOM-TAR AND T-NME (WKS-J) = WKS-SMES
+  118                               AND T-AN (WKS-K) = WKS-SANO
+  119                            ADD 1 TO T-CLTS (WKS-I WKS-J WKS-K).
+  120
+  121    000255          2200-GENERA-REPORTE.
+  122    000258              PERFORM 2220-INICIO.
+  123    000261              PERFORM 2250-PROCESO
+  124                            VARYING WKS-L FROM 1 BY 1 UNTIL WKS-L > 4
+  125                            AFTER WKS-M FROM 1 BY 1 UNTIL WKS-M > 3
+  126                            AFTER WKS-N FROM 1 BY 1 UNTIL WKS-N > 12.
+  127    000327              PERFORM 2270-FIN.
+  128
+  129    000333          2220-INICIO.
+  130
+  131    000338          2250-PROCESO.
+  132
+  133    000341                 PERFORM 2252-ENCABEZADO.
+  134
+  135
+  136    000346             2252-ENCABEZADO.
+  137
+  138    000351          2270-FIN.
+  139
+  140
+  141    000356          3000-FIN.
+  142
+  143
+  144    000359              CLOSE CLIENTES.
+  145    000367              CLOSE REP-TAC.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/21/23  18:27:50 PAGE   4
+SOURCE FILE: ALTTARJE                   OPTIONS: L
+
+PROGRAM SUMMARY STATISTICS                                                                           ALTTARJE
+
+
+READ ONLY SIZE =                       850 (X"00000352") BYTES
+
+READ/WRITE SIZE =                     1112 (X"00000458") BYTES
+
+OVERLAYABLE SEGMENT SIZE =               0 (X"00000000") BYTES
+
+TOTAL SIZE (LESS I/O BUFFERS) =       1962 (X"000007AA") BYTES      145 LINES
+
+    0 ERRORS         0 WARNINGS     FOR PROGRAM ALTTARJE
+
+
+
+OBJECT VERSION LEVEL =   1
+

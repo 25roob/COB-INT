@@ -1,0 +1,362 @@
+
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/15/23  16:37:49 PAGE   1
+SOURCE FILE: STAR-FEC                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8
+
+    1                    IDENTIFICATION DIVISION.
+    2                    PROGRAM-ID. STAR-FEC.
+    3                    ENVIRONMENT DIVISION.
+    4                    INPUT-OUTPUT SECTION.
+    5                    FILE-CONTROL.
+    6                        SELECT CLIENTES ASSIGN TO DISK.
+    7                        SELECT REP-STARF ASSIGN TO PRINTER.
+    8                        SELECT SOR-TEM ASSIGN TO SORT.
+    9                    DATA DIVISION.
+   10                    FILE SECTION.
+   11                    FD CLIENTES.
+   12                    01 REG-CLI.
+   13                        03 ID-CLIENTE PIC 9(03).
+   14                        03 NOM-CLI    PIC X(30).
+   15                        03 CLA-TAR    PIC 9.
+   16                        03 NOM-TAR    PIC X(20).
+   17                        03 ANUA       PIC 9(05)V99.
+   18                        03 FEC-ING    PIC 9(08).
+   19
+   20                    FD REP-STARF.
+   21                    01 LINEA          PIC X(132).
+   22
+   23                    SD SOR-TEM.
+   24                    01 REG-CLI-S.
+   25                        03 ID-CLIENTE-S PIC 9(03).
+   26                        03 NOM-CLI-S    PIC X(30).
+   27                        03 CLA-TAR-S    PIC 9.
+   28                        03 NOM-TAR-S    PIC X(20).
+   29                        03 ANUA-S       PIC 9(05)V99.
+   30                        03 FEC-ING-S    PIC 9(08).
+   31
+   32
+   33                    WORKING-STORAGE SECTION.
+   34                    01 WKS-CONT-LIN     PIC 99.
+   35                    01 WKS-TOTAL-CLI    PIC 99.
+   36                    01 WKS-CHANGE-NT PIC X(20).
+   37                    01 WKS-TOTAL-ANUA   PIC 9(05)V99.
+   38                    01 WKS-CHANGE-FI  PIC 9(08).
+   39                    01 WKS-ANUALIS      PIC 9(05)V99.
+   40
+   41                    77 WKS-FIN            PIC 9.
+   42                    77 WKS-NOM-TAR           PIC X(20).
+   43
+   44
+   45                    01 WKS-HOY.
+   46                        03 WKS-ANO     PIC 99.
+   47                        03 WKS-MES     PIC 99.
+   48                        03 WKS-DIA     PIC 99.
+   49
+   50
+   51                   *------VARIABLES-DE-REPORTE-----------*
+   52                    01 WKS-ENCA.
+   53                        03 FILLER         PIC X(28) VALUE SPACES.
+   54                        03 FILLER         PIC X(40)
+   55                                   VALUE "REPORTE DE TARJETAS".
+   56
+   57                    01 WKS-ENCB.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/15/23  16:37:49 PAGE   2
+SOURCE FILE: STAR-FEC                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   STAR-FEC
+
+   58                   *       03 FILLER         PIC X(03) VALUE SPACES.
+   59                        03 FILLER         PIC X(18)
+   60                                VALUE "FECHA DE PROCESO: ".
+   61                        03 WKS-DIA        PIC 99.
+   62                        03 FILLER         PIC X VALUE "/".
+   63                        03 WKS-MES        PIC 99.
+   64                        03 FILLER         PIC X VALUE "/".
+   65                        03 WKS-ANO        PIC 99.
+   66                        03 FILLER         PIC X(38) VALUE SPACES.
+   67                        03 FILLER         PIC X(07) VALUE "PAG. : ".
+   68                        03 WKS-NUM-PAGA   PIC 9(02).
+   69
+   70                    01 WKS-ENCBB.
+   71                        03 FILLER         PIC X(20) VALUE
+   72                             "TIPO DE TARJETA:".
+   73                        03 WKS-NOM-TARB   PIC X(20).
+   74
+   75                    01 WKS-ENCC.
+   76                   *       03 FILLER         PIC X(03) VALUE SPACES.
+   77                        03 FILLER         PIC X(10) VALUE "ID-CLIENTE".
+   78                        03 FILLER         PIC X(02) VALUE SPACES.
+   79                        03 FILLER         PIC X(06) VALUE "NOMBRE".
+   80                        03 FILLER         PIC X(10) VALUE SPACES.
+   81                        03 FILLER         PIC X(16) VALUE "CLAVE DE TARJETA".
+   82                        03 FILLER         PIC X(03) VALUE SPACES.
+   83                        03 FILLER         PIC X(14) VALUE "FEC DE INGRESO".
+   84                        03 FILLER         PIC X(03) VALUE SPACES.
+   85                        03 FILLER         PIC X(09) VALUE "ANUALIDAD".
+   86
+   87
+   88                    01 WKS-DET1.
+   89                        03 FILLER         PIC X(02) VALUE SPACES.
+   90                        03 WKS-ID         PIC 999.
+   91                        03 FILLER         PIC X(07) VALUE SPACES.
+   92                        03 WKS-NOMB       PIC X(21).
+   93                        03 FILLER         PIC X(02) VALUE SPACES.
+   94                        03 WKS-TIPT       PIC X(10).
+   95                        03 FILLER         PIC X(03) VALUE SPACES.
+   96                        03 FILLER         PIC X(02) VALUE "20".
+   97                        03 WKS-FECH       PIC 9(06).
+   98                        03 FILLER         PIC X(07) VALUE SPACES.
+   99                        03 WKS-ANUF       PIC $$$,$$9.99.
+  100
+  101                    01 WKS-TOT1.
+  102                        03 FILLER         PIC X(38) VALUE SPACES.
+  103                        03 FILLER         PIC X(18) VALUE "TOTAL DE CLIENTES:".
+  104                        03 FILLER         PIC X(09) VALUE SPACES.
+  105                        03 WKS-TOCLI      PIC 99.
+  106
+  107
+  108                    01 WKS-TOTA.
+  109                        03 FILLER         PIC X(20) VALUE SPACES.
+  110                        03 FILLER         PIC X(16) VALUE
+  111                                 "TOTAL ANUALIDAD".
+  112                        03 WKS-FTITAR     PIC X(8).
+  113                        03 FILLER         PIC X(05) VALUE ":    ".
+  114                        03 WKS-TOANU      PIC $$$$,$$9.99.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/15/23  16:37:49 PAGE   3
+SOURCE FILE: STAR-FEC                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   STAR-FEC
+
+  115
+  116                    01 WKS-TOTAS.
+  117                        03 FILLER         PIC X(20) VALUE SPACES.
+  118                        03 FILLER         PIC X(19) VALUE
+  119                            "TOTAL ANUALIDADES:".
+  120                   *           03 WKS-FTITARS PIC X(8).
+  121                        03 FILLER         PIC X(05) VALUE SPACES.
+  122                        03 WKS-TOANS PIC $$$$,$$9.99.
+  123
+  124
+  125                    01 WKS-TOTPAR.
+  126                        03 FILLER         PIC X(33) VALUE SPACES.
+  127                        03 FILLER         PIC X(24) VALUE
+  128                                "TOTAL ANUALIDADES ANO 20".
+  129                        03 WKS-ANOT       PIC 99.
+  130                        03 FILLER         PIC X(03) VALUE ":  ".
+  131                        03 WKS-PARTOT     PIC $$$$,$$9.99.
+  132
+  133                    01 WKS-FEC-SPLIT.
+  134                        03 FILLER         PIC 99.
+  135                        03 WKS-ASPLIT     PIC 99.
+  136                        03 FILLER         PIC 9(04).
+  137
+  138                    01 WKS-ANUASP         PIC 9(6)V99.
+  139                    01 WKS-CUTANO         PIC 99.
+  140
+  141
+  142                    PROCEDURE DIVISION.
+  143    000002          PRINCIPAL SECTION.
+  144    000005          INICIO.
+  145
+  146    000008              DISPLAY SPACES LINE 01 POSITION 01 ERASE.
+  147    000022              DISPLAY "ORDENAMIENTO POR TIPO DE TRJETA Y FECHA"
+  148                            LINE 10 POSITION 05.
+  149
+  150    000034              SORT SOR-TEM
+  151                        ASCENDING NOM-TAR-S FEC-ING-S NOM-CLI-S
+  152                           USING CLIENTES
+  153                   *     INPUT PROCEDURE 1000-ORDENA-ARCHIVO
+  154                        OUTPUT PROCEDURE 2000-GENERA-REPORTE.
+  155    000042              STOP RUN.
+  156
+  157    000046          1000-ORDENA-ARCHIVO SECTION.
+  158    000049          INICIO-ORDENA.
+  159    000052              PERFORM 1200-INICIO.
+  160    000055              PERFORM 1500-PROCESO UNTIL WKS-FIN = 1.
+  161    000066              PERFORM 1700-FIN.
+  162    000069              GO TO 1800-FIN-SECTION.
+  163
+  164    000072          1200-INICIO.
+  165    000075              OPEN INPUT CLIENTES.
+  166
+  167    000082              DISPLAY SPACES LINE 01 POSITION 01 ERASE.
+  168
+  169    000096              READ CLIENTES
+  170                            AT END MOVE 1 TO WKS-FIN.
+  171
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/15/23  16:37:49 PAGE   4
+SOURCE FILE: STAR-FEC                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   STAR-FEC
+
+  172    000111              DISPLAY "ORDENAMIENTO POR TIPO DE TRJETA Y FECHA"
+  173                            LINE 10 POSITION 05.
+  174
+  175
+  176    000126          1500-PROCESO.
+  177
+  178                   *     IF WKS-NOM-TAR = NOM-TAR
+  179    000129              MOVE REG-CLI TO REG-CLI-S
+  180    000137              RELEASE REG-CLI-S.
+  181
+  182    000142              READ CLIENTES
+  183                        AT END MOVE 1 TO WKS-FIN.
+  184
+  185    000159          1700-FIN.
+  186    000162              CLOSE CLIENTES.
+  187
+  188    000169              INITIALIZE WKS-FIN.
+  189
+  190    000177          1800-FIN-SECTION.
+  191    000180              EXIT.
+  192
+  193
+  194    000185          2000-GENERA-REPORTE SECTION.
+  195    000188          INICIO-REPORTE.
+  196    000191              PERFORM 2200-INICIO.
+  197    000194              PERFORM 2500-PROCESO UNTIL WKS-FIN = 1.
+  198    000205              PERFORM 2700-FIN.
+  199    000208              GO TO 2800-FIN-SECTION.
+  200
+  201    000211          2200-INICIO.
+  202
+  203    000214              OPEN OUTPUT REP-STARF
+  204    000221              RETURN SOR-TEM
+  205                            AT END MOVE 1 TO WKS-FIN.
+  206
+  207                   *     PERFORM 2220-GENERA-ENCABEZADO.
+  208
+  209    000236          2220-GENERA-ENCABEZADO.
+  210
+  211    000239              ADD 1                   TO WKS-NUM-PAGA.
+  212    000243              MOVE SPACES             TO LINEA.
+  213    000249              MOVE WKS-ENCA           TO LINEA.
+  214    000257              WRITE LINEA AFTER PAGE.
+  215
+  216    000266              ACCEPT WKS-HOY FROM DATE.
+  217    000272              MOVE CORR WKS-HOY       TO WKS-ENCB.
+  218
+  219    000291              MOVE WKS-ENCB           TO LINEA.
+  220    000299              WRITE LINEA AFTER 1.
+  221
+  222    000311              MOVE NOM-TAR-S           TO WKS-NOM-TARB.
+  223    000318              MOVE WKS-ENCBB          TO LINEA.
+  224    000326              WRITE LINEA AFTER 2.
+  225
+  226    000338              MOVE WKS-ENCC           TO LINEA.
+  227    000346              WRITE LINEA AFTER 2.
+  228    000358              MOVE 3                  TO WKS-CONT-LIN.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/15/23  16:37:49 PAGE   5
+SOURCE FILE: STAR-FEC                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   STAR-FEC
+
+  229
+  230    000367          2500-PROCESO.
+  231
+  232    000370              MOVE ID-CLIENTE-S         TO WKS-ID.
+  233    000377              MOVE NOM-CLI-S            TO WKS-NOMB.
+  234    000384              MOVE NOM-TAR-S            TO WKS-TIPT.
+  235    000391              MOVE FEC-ING-S            TO WKS-FECH WKS-FEC-SPLIT.
+  236    000402              MOVE ANUA-S               TO WKS-ANUF.
+  237
+  238    000407              IF WKS-CUTANO = WKS-ASPLIT
+  239                            NEXT SENTENCE
+  240                        ELSE
+  241                            MOVE WKS-CUTANO TO WKS-ANOT
+  242                            MOVE WKS-ASPLIT TO WKS-CUTANO
+  243                            PERFORM 2520-ESCRIBE-DATE-ANUA.
+  244
+  245    000432              IF WKS-CHANGE-NT = NOM-TAR-S
+  246                            NEXT SENTENCE
+  247                        ELSE
+  248                            PERFORM 2720-GENERA-PIE
+  249                   *         MOVE 0              TO WKS-TOTAL-ANUA
+  250                   *         MOVE WKS-CHANGE-NT TO WKS-NOM-TARB
+  251                            PERFORM 2220-GENERA-ENCABEZADO
+  252                            MOVE NOM-TAR-S        TO WKS-CHANGE-NT
+  253                            INITIALIZE WKS-TOTAL-CLI.
+  254
+  255    000463              IF WKS-CONT-LIN > 60
+  256                            PERFORM 2220-GENERA-ENCABEZADO.
+  257
+  258    000474              MOVE WKS-DET1 TO LINEA
+  259    000483              WRITE LINEA AFTER 1
+  260    000495              ADD 1 TO WKS-TOTAL-CLI.
+  261
+  262    000499              ADD ANUA-S                TO WKS-TOTAL-ANUA.
+  263    000505              ADD ANUA-S                TO WKS-ANUALIS.
+  264    000511              ADD ANUA-S                TO WKS-ANUASP.
+  265
+  266    000517              RETURN SOR-TEM
+  267                            AT END MOVE 1 TO WKS-FIN.
+  268
+  269
+  270
+  271    000532          2520-ESCRIBE-DATE-ANUA.
+  272    000535              IF WKS-NUM-PAGA = 0
+  273                            NEXT SENTENCE
+  274                        ELSE
+  275                   *     MOVE WKS-ASPLIT TO WKS-ANOT.
+  276                            MOVE WKS-ANUASP TO WKS-PARTOT
+  277                            MOVE WKS-TOTPAR TO LINEA
+  278
+  279                            WRITE LINEA AFTER 1
+  280                            MOVE ZEROES TO WKS-ANUASP.
+  281
+  282
+  283    000576          2700-FIN.
+  284
+  285    000579              PERFORM 2720-GENERA-PIE.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/15/23  16:37:49 PAGE   6
+SOURCE FILE: STAR-FEC                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   STAR-FEC
+
+  286
+  287    000582              MOVE WKS-ANUALIS TO WKS-TOANS.
+  288    000587              MOVE WKS-TOTAS TO LINEA.
+  289    000595              WRITE LINEA AFTER 2.
+  290
+  291    000607              CLOSE REP-STARF.
+  292
+  293    000616          2720-GENERA-PIE.
+  294    000619              IF WKS-NUM-PAGA = 0
+  295                            NEXT SENTENCE
+  296                        ELSE
+  297                            MOVE WKS-CHANGE-NT     TO WKS-FTITAR
+  298                            MOVE WKS-TOTAL-ANUA TO WKS-TOANU
+  299                            MOVE WKS-TOTA       TO LINEA
+  300                            WRITE LINEA AFTER 2
+  301                            INITIALIZE WKS-TOTAL-ANUA.
+  302
+  303
+  304
+  305
+  306
+  307    000667          2800-FIN-SECTION.
+  308    000670              EXIT.
+  309
+  310
+  311
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/15/23  16:37:49 PAGE   7
+SOURCE FILE: STAR-FEC                   OPTIONS: L
+
+PROGRAM SUMMARY STATISTICS                                                                           STAR-FEC
+
+
+READ ONLY SIZE =                      1330 (X"00000532") BYTES
+
+READ/WRITE SIZE =                     1556 (X"00000614") BYTES
+
+OVERLAYABLE SEGMENT SIZE =               0 (X"00000000") BYTES
+
+TOTAL SIZE (LESS I/O BUFFERS) =       2886 (X"00000B46") BYTES      311 LINES
+
+    0 ERRORS         0 WARNINGS     FOR PROGRAM STAR-FEC
+
+
+
+OBJECT VERSION LEVEL =   1
+

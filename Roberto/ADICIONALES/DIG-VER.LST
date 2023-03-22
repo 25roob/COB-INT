@@ -1,0 +1,231 @@
+
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/17/23  09:57:49 PAGE   1
+SOURCE FILE: DIG-VER                    OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8
+
+    1                    IDENTIFICATION DIVISION.
+    2                    PROGRAM-ID. DIG-VER.
+    3                    ENVIRONMENT DIVISION.
+    4                    DATA DIVISION.
+    5                    WORKING-STORAGE SECTION.
+    6
+    7                   *---------------TABLAS----------------*
+    8                    01 WKS-LINEA.
+    9                        03 WKS-NO-REC           PIC X(12) VALUE "01AA93050001".
+   10                        03 WKS-PI               PIC 999.
+   11                        03 WKS-PF               PIC 999.
+   12
+   13                    01 T-LINEA REDEFINES WKS-LINEA.
+   14                        03 T-LIN OCCURS 18 TIMES PIC X.
+   15
+   16                    01 WKS-ALFA.
+   17                        03 FILLER               PIC X VALUE "A".
+   18                        03 FILLER               PIC X VALUE "B".
+   19                        03 FILLER               PIC X VALUE "C".
+   20                        03 FILLER               PIC X VALUE "D".
+   21                        03 FILLER               PIC X VALUE "E".
+   22                        03 FILLER               PIC X VALUE "F".
+   23                        03 FILLER               PIC X VALUE "G".
+   24                        03 FILLER               PIC X VALUE "H".
+   25                        03 FILLER               PIC X VALUE "I".
+   26                        03 FILLER               PIC X VALUE "J".
+   27                        03 FILLER               PIC X VALUE "K".
+   28                        03 FILLER               PIC X VALUE "L".
+   29                        03 FILLER               PIC X VALUE "M".
+   30                        03 FILLER               PIC X VALUE "N".
+   31                        03 FILLER               PIC X VALUE "O".
+   32                        03 FILLER               PIC X VALUE "P".
+   33                        03 FILLER               PIC X VALUE "Q".
+   34                        03 FILLER               PIC X VALUE "R".
+   35                        03 FILLER               PIC X VALUE "S".
+   36                        03 FILLER               PIC X VALUE "T".
+   37                        03 FILLER               PIC X VALUE "U".
+   38                        03 FILLER               PIC X VALUE "V".
+   39                        03 FILLER               PIC X VALUE "W".
+   40                        03 FILLER               PIC X VALUE "X".
+   41                        03 FILLER               PIC X VALUE "Y".
+   42                        03 FILLER               PIC X VALUE "Z".
+   43
+   44                    01 T-ALFA REDEFINES WKS-ALFA.
+   45                        03 T-ALF OCCURS 26 TIMES PIC X.
+   46
+   47                    01 WKS-NUMERIC.
+   48                        03 FILLER               PIC 99 VALUE 10.
+   49                        03 FILLER               PIC 99 VALUE 11.
+   50                        03 FILLER               PIC 99 VALUE 12.
+   51                        03 FILLER               PIC 99 VALUE 13.
+   52                        03 FILLER               PIC 99 VALUE 14.
+   53                        03 FILLER               PIC 99 VALUE 15.
+   54                        03 FILLER               PIC 99 VALUE 16.
+   55                        03 FILLER               PIC 99 VALUE 17.
+   56                        03 FILLER               PIC 99 VALUE 18.
+   57                        03 FILLER               PIC 99 VALUE 19.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/17/23  09:57:49 PAGE   2
+SOURCE FILE: DIG-VER                    OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   DIG-VER
+
+   58                        03 FILLER               PIC 99 VALUE 20.
+   59                        03 FILLER               PIC 99 VALUE 21.
+   60                        03 FILLER               PIC 99 VALUE 22.
+   61                        03 FILLER               PIC 99 VALUE 23.
+   62                        03 FILLER               PIC 99 VALUE 24.
+   63                        03 FILLER               PIC 99 VALUE 25.
+   64                        03 FILLER               PIC 99 VALUE 26.
+   65                        03 FILLER               PIC 99 VALUE 27.
+   66                        03 FILLER               PIC 99 VALUE 28.
+   67                        03 FILLER               PIC 99 VALUE 29.
+   68                        03 FILLER               PIC 99 VALUE 30.
+   69                        03 FILLER               PIC 99 VALUE 31.
+   70                        03 FILLER               PIC 99 VALUE 32.
+   71                        03 FILLER               PIC 99 VALUE 33.
+   72                        03 FILLER               PIC 99 VALUE 34.
+   73                        03 FILLER               PIC 99 VALUE 35.
+   74
+   75                    01 T-NUMERIC REDEFINES WKS-NUMERIC.
+   76                        03 T-NUME OCCURS 26 TIMES PIC 99.
+   77
+   78                    01 WKS-PONDERA.
+   79                        03 FILLER               PIC 99 VALUE 11.
+   80                        03 FILLER               PIC 99 VALUE 13.
+   81                        03 FILLER               PIC 99 VALUE 17.
+   82                        03 FILLER               PIC 99 VALUE 19.
+   83                        03 FILLER               PIC 99 VALUE 23.
+   84
+   85                    01 T-PONDERA REDEFINES WKS-PONDERA.
+   86                        03 T-POND OCCURS 5 TIMES PIC 99.
+   87
+   88                   *---------------VARIABLES-----------------*
+   89                    77 WKS-I                    PIC 99.
+   90                    77 WKS-J                    PIC 99.
+   91                    77 WKS-K                    PIC 99.
+   92                    77 WKS-L                    PIC 99.
+   93
+   94                    01 WKS-PE-INI.
+   95                        03 FILLER               PIC 99.
+   96                        03 WKS-PI-C             PIC 999.
+   97
+   98                    01 WKS-PE-FIN.
+   99                        03 FILLER               PIC 99.
+  100                        03 WKS-PF-C             PIC 999.
+  101
+  102                    01 WKS-COERCION             PIC 9.
+  103                    01 WKS-ESLETRA              PIC 9.
+  104                    01 WKS-MRES                 PIC 9999.
+  105                    01 WKS-SUMRES               PIC 999999.
+  106
+  107
+  108                       01 WKS-CO                   PIC 999V99.
+  109                       01 WKS-COCIENTE.
+  110                           03 WKS-COS              PIC 999.
+  111                           03 FILLER               PIC V99.
+  112
+  113                       01 WKS-REMAN                PIC 99.
+  114
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/17/23  09:57:49 PAGE   3
+SOURCE FILE: DIG-VER                    OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   DIG-VER
+
+  115                       01 WKS-FINAL-L.
+  116                           03 WKS-LINEA-C          PIC X(18).
+  117                           03 WKS-REMAN-C          PIC 99.
+  118
+  119                    PROCEDURE DIVISION.
+  120    000002          INICIO.
+  121    000005              PERFORM 1000-INICIO.
+  122    000008              PERFORM 2000-PROCESO.
+  123    000011              PERFORM 3000-FIN.
+  124    000014              STOP RUN.
+  125
+  126    000017          1000-INICIO.
+  127    000020              DISPLAY SPACES LINE 1 POSITION 1 ERASE.
+  128    000034              DISPLAY "NUMERO DE RECIBO:" LINE 5 POSITION 5.
+  129                   *       ACCEPT WKS-NO-REC LINE 5 POSITION 35.
+  130    000046              DISPLAY "PERIODO INICIAL (99999):" LINE 6 POSITION 5.
+  131    000058              ACCEPT WKS-PE-INI LINE 6 POSITION 35.
+  132    000070              DISPLAY "PERIODO FINAL (99999):" LINE 7 POSITION 5.
+  133    000082              ACCEPT WKS-PE-FIN LINE 7 POSITION 35.
+  134
+  135    000096          2000-PROCESO.
+  136    000099              MOVE WKS-PI-C TO WKS-PI.
+  137    000106              MOVE WKS-PF-C TO WKS-PF.
+  138
+  139    000113              PERFORM 2100-MULTIPLICAR-FACTOR VARYING WKS-I
+  140                            FROM 18 BY -1 UNTIL WKS-I < 1.
+  141
+  142    000133                 DIVIDE WKS-SUMRES BY 97 GIVING WKS-CO.
+  143    000142                 MOVE WKS-CO TO WKS-COCIENTE.
+  144    000149                 COMPUTE WKS-REMAN = WKS-SUMRES - WKS-COS * 97.
+  145
+  146    000159                 ADD 1 TO WKS-REMAN.
+  147
+  148    000163                 MOVE WKS-REMAN TO WKS-REMAN-C.
+  149
+  150    000170                 MOVE WKS-LINEA TO WKS-LINEA-C.
+  151
+  152    000177              DISPLAY WKS-FINAL-L LINE 10 POSITION 10.
+  153
+  154    000191          2100-MULTIPLICAR-FACTOR.
+  155    000194              INITIALIZE WKS-ESLETRA.
+  156
+  157    000200              IF WKS-L > 4
+  158                            MOVE 0 TO WKS-L.
+  159    000214              ADD 1 TO WKS-L.
+  160
+  161
+  162    000219              PERFORM 2120-ES-LETRA VARYING WKS-J
+  163                            FROM 1 BY 1 UNTIL WKS-J > 26.
+  164    000240              IF WKS-ESLETRA = 1
+  165                            PERFORM 2140-MULTIPLICAR-LETRA VARYING WKS-K
+  166                                FROM 1 BY 1 UNTIL WKS-K > 26
+  167                        ELSE
+  168                            MOVE T-LIN (WKS-I) TO WKS-COERCION
+  169                            MULTIPLY WKS-COERCION BY T-POND(WKS-L)
+  170                                GIVING WKS-MRES
+  171                            ADD WKS-MRES TO WKS-SUMRES.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/17/23  09:57:49 PAGE   4
+SOURCE FILE: DIG-VER                    OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   DIG-VER
+
+  172
+  173
+  174    000296          2120-ES-LETRA.
+  175    000299              IF T-LIN (WKS-I) = T-ALF (WKS-J)
+  176                            MOVE 1 TO WKS-ESLETRA.
+  177
+  178    000319          2140-MULTIPLICAR-LETRA.
+  179    000322              IF T-LIN (WKS-I) = T-ALF (WKS-K)
+  180                            MULTIPLY T-NUME (WKS-K) BY T-POND (WKS-L)
+  181                               GIVING WKS-MRES
+  182                            ADD WKS-MRES TO WKS-SUMRES.
+  183
+  184    000357          3000-FIN.
+  185
+  186
+  187
+  188
+  189
+  190
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/17/23  09:57:49 PAGE   5
+SOURCE FILE: DIG-VER                    OPTIONS: L
+
+PROGRAM SUMMARY STATISTICS                                                                           DIG-VER
+
+
+READ ONLY SIZE =                       922 (X"0000039A") BYTES
+
+READ/WRITE SIZE =                      236 (X"000000EC") BYTES
+
+OVERLAYABLE SEGMENT SIZE =               0 (X"00000000") BYTES
+
+TOTAL SIZE (LESS I/O BUFFERS) =       1158 (X"00000486") BYTES      190 LINES
+
+    0 ERRORS         0 WARNINGS     FOR PROGRAM DIG-VER
+
+
+
+OBJECT VERSION LEVEL =   1
+

@@ -1,0 +1,126 @@
+
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/14/23  00:20:25 PAGE   1
+SOURCE FILE: SENTENC                    OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8
+
+    1                    IDENTIFICATION DIVISION.
+    2                    PROGRAM-ID. SENTENC.
+    3                    ENVIRONMENT DIVISION.
+    4                    DATA DIVISION.
+    5                    WORKING-STORAGE SECTION.
+    6
+    7                    01 WKS-FECHA.
+    8                        05 WKS-LINE01   PIC X(10).
+    9
+   10                    01 WKS-HOY.
+   11                        05 WKS-ANO     PIC 99.
+   12                        05 WKS-MES     PIC 99.
+   13                        05 WKS-DIA       PIC 99.
+   14
+   15                    01 WKS-IDENT.
+   16                        05 WKS-LINE02        PIC X(80).
+   17
+   18                    01 WKS-NOMBREC.
+   19                        05 WKS-NOM           PIC X(15).
+   20                        05 WKS-APE-PA      PIC X(15).
+   21                        05 WKS-APE-MA      PIC X(15).
+   22
+   23                    01 WKS-COUNT           PIC 99.
+   24
+   25                    01 WKS-NAPEPA        PIC X(15).
+   26                    01 WKS-NAPEMA       PIC    X(15).
+   27
+   28                   * 01 PARA-CONV           PIC X(60).
+   29                   * 01 PARA-REPL            PIC X(60).
+   30
+   31                    PROCEDURE DIVISION.
+   32    000002          INICIO.
+   33
+   34    000005              PERFORM 1000-INICIO.
+   35    000008              PERFORM 2000-PROCESO.
+   36    000011              PERFORM 3000-FIN.
+   37    000014              STOP RUN.
+   38
+   39    000017          1000-INICIO.
+   40    000020              ACCEPT WKS-HOY FROM DATE.
+   41    000026              DISPLAY SPACES LINE 1 POSITION 1 ERASE.
+   42
+   43    000042          2000-PROCESO.
+   44                   *------------------------1--------------------*
+   45
+   46    000045              STRING WKS-DIA DELIMITED BY SIZE
+   47                            "/" DELIMITED BY SIZE
+   48                            WKS-MES DELIMITED BY SIZE
+   49                            "/20" DELIMITED BY SIZE
+   50                            WKS-ANO DELIMITED BY SIZE
+   51                            INTO WKS-LINE01.
+   52
+   53    000077              DISPLAY WKS-FECHA LINE 05 POSITION 10.
+   54                   *-----------------------2----------------------*
+   55    000090              DISPLAY "NOMBRE: " LINE 07 POSITION 10.
+   56    000102              ACCEPT WKS-NOM LINE 07 POSITION  40.
+   57    000114              DISPLAY "APELLIDO PATERNO: " LINE 08 POSITION 10.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/14/23  00:20:25 PAGE   2
+SOURCE FILE: SENTENC                    OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   SENTENC
+
+   58    000126              ACCEPT WKS-APE-PA LINE 08 POSITION 40.
+   59    000138              DISPLAY "APELLIDO MATERNO:" LINE 09 POSITION 10.
+   60    000150              ACCEPT WKS-APE-MA LINE 09 POSITION 40.
+   61
+   62    000162              STRING WKS-NOM DELIMITED BY " "
+   63                            " " DELIMITED BY SIZE
+   64                            WKS-APE-PA DELIMITED BY " "
+   65                            " " DELIMITED BY SIZE
+   66                            WKS-APE-MA DELIMITED BY " "
+   67                            INTO WKS-LINE02.
+   68
+   69    000205              DISPLAY WKS-IDENT LINE 11 POSITION 10.
+   70
+   71                   *-----------------------3--------------------------*
+   72    000218              INSPECT WKS-IDENT TALLYING WKS-COUNT
+   73                            FOR CHARACTERS BEFORE " ".
+   74
+   75    000234              ADD 2 TO WKS-COUNT.
+   76
+   77    000239              UNSTRING WKS-IDENT DELIMITED BY " "
+   78                            INTO WKS-NAPEPA WKS-NAPEMA
+   79                            WITH POINTER WKS-COUNT.
+   80
+   81    000288              DISPLAY "APELLIDO PATERNO: " LINE 13 POSITION 10.
+   82    000301              DISPLAY WKS-NAPEPA LINE 13 POSITION 30.
+   83    000313              DISPLAY "APELLIDO MATERNO: " LINE 14 POSITION 10.
+   84    000325              DISPLAY WKS-NAPEMA LINE 14 POSITION 30.
+   85
+   86                   *----------------------4-----------------------------*
+   87    000337              INSPECT WKS-IDENT REPLACING ALL "MAR" BY "PIT".
+   88    000363              DISPLAY WKS-IDENT LINE 16 POSITION 10.
+   89
+   90                   *-------------------------5---------------------------*
+   91    000375              INSPECT WKS-IDENT CONVERTING "MAR" TO "PIT".
+   92    000383              DISPLAY WKS-IDENT LINE 17 POSITION 10.
+   93
+   94
+   95    000397          3000-FIN.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/14/23  00:20:25 PAGE   3
+SOURCE FILE: SENTENC                    OPTIONS: L
+
+PROGRAM SUMMARY STATISTICS                                                                           SENTENC
+
+
+READ ONLY SIZE =                      1226 (X"000004CA") BYTES
+
+READ/WRITE SIZE =                      236 (X"000000EC") BYTES
+
+OVERLAYABLE SEGMENT SIZE =               0 (X"00000000") BYTES
+
+TOTAL SIZE (LESS I/O BUFFERS) =       1462 (X"000005B6") BYTES       95 LINES
+
+    0 ERRORS         0 WARNINGS     FOR PROGRAM SENTENC
+
+
+
+OBJECT VERSION LEVEL =   2
+

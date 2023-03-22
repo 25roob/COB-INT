@@ -1,0 +1,259 @@
+
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/14/23  19:47:19 PAGE   1
+SOURCE FILE: SORT-PRO                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8
+
+    1                    IDENTIFICATION DIVISION.
+    2                    PROGRAM-ID. SORT-PRO.
+    3                    ENVIRONMENT DIVISION.
+    4                    INPUT-OUTPUT SECTION.
+    5                    FILE-CONTROL.
+    6                        SELECT CLIENTES ASSIGN TO DISK.
+    7                        SELECT REP-SOR ASSIGN TO PRINTER.
+    8                        SELECT SOR-TEM ASSIGN TO SORT.
+    9                    DATA DIVISION.
+   10                    FILE SECTION.
+   11                    FD CLIENTES.
+   12                    01 REG-CLI.
+   13                        03 ID-CLIENTE PIC 9(03).
+   14                        03 NOM-CLI    PIC X(30).
+   15                        03 CLA-TAR    PIC 9.
+   16                        03 NOM-TAR    PIC X(20).
+   17                        03 ANUA       PIC 9(05)V99.
+   18                        03 FEC-ING    PIC 9(08).
+   19
+   20                    FD REP-SOR.
+   21                    01 LINEA          PIC X(132).
+   22
+   23                    SD SOR-TEM.
+   24                    01 REG-CLI-S.
+   25                        03 ID-CLIENTE-S PIC 9(03).
+   26                        03 NOM-CLI-S    PIC X(30).
+   27                        03 CLA-TAR-S    PIC 9.
+   28                        03 NOM-TAR-S    PIC X(20).
+   29                        03 ANUA-S       PIC 9(05)V99.
+   30                        03 FEC-ING-S    PIC 9(08).
+   31
+   32
+   33                    WORKING-STORAGE SECTION.
+   34                    01 WKS-CONT-LIN     PIC 99.
+   35                    01 WKS-TOTAL-CLI    PIC 99.
+   36
+   37                    77 WKS-FIN            PIC 9.
+   38                    77 WKS-NOM-TAR           PIC X(20).
+   39
+   40
+   41                    01 WKS-HOY.
+   42                        03 WKS-ANO     PIC 99.
+   43                        03 WKS-MES     PIC 99.
+   44                        03 WKS-DIA     PIC 99.
+   45
+   46
+   47                   *------VARIABLES-DE-REPORTE-----------*
+   48                    01 WKS-ENCA.
+   49                        03 FILLER         PIC X(28) VALUE SPACES.
+   50                        03 FILLER         PIC X(40)
+   51                                   VALUE "REPORTE DE TARJETAS".
+   52
+   53                    01 WKS-ENCB.
+   54                   *       03 FILLER         PIC X(03) VALUE SPACES.
+   55                        03 FILLER         PIC X(18)
+   56                                VALUE "FECHA DE PROCESO: ".
+   57                        03 WKS-DIA        PIC 99.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/14/23  19:47:19 PAGE   2
+SOURCE FILE: SORT-PRO                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   SORT-PRO
+
+   58                        03 FILLER         PIC X VALUE "/".
+   59                        03 WKS-MES        PIC 99.
+   60                        03 FILLER         PIC X VALUE "/".
+   61                        03 WKS-ANO        PIC 99.
+   62                        03 FILLER         PIC X(38) VALUE SPACES.
+   63                        03 FILLER         PIC X(07) VALUE "PAG. : ".
+   64                        03 WKS-NUM-PAGA   PIC 9(02).
+   65
+   66                    01 WKS-ENCBB.
+   67                        03 FILLER         PIC X(20) VALUE
+   68                             "TIPO DE TARJETA:".
+   69                        03 WKS-NOM-TARB   PIC X(20).
+   70
+   71                    01 WKS-ENCC.
+   72                   *       03 FILLER         PIC X(03) VALUE SPACES.
+   73                        03 FILLER         PIC X(10) VALUE "ID-CLIENTE".
+   74                        03 FILLER         PIC X(02) VALUE SPACES.
+   75                        03 FILLER         PIC X(06) VALUE "NOMBRE".
+   76                        03 FILLER         PIC X(10) VALUE SPACES.
+   77                        03 FILLER         PIC X(16) VALUE "CLAVE DE TARJETA".
+   78                        03 FILLER         PIC X(03) VALUE SPACES.
+   79                        03 FILLER         PIC X(14) VALUE "FEC DE INGRESO".
+   80                        03 FILLER         PIC X(03) VALUE SPACES.
+   81                        03 FILLER         PIC X(09) VALUE "ANUALIDAD".
+   82
+   83
+   84                    01 WKS-DET1.
+   85                        03 FILLER         PIC X(02) VALUE SPACES.
+   86                        03 WKS-ID         PIC 999.
+   87                        03 FILLER         PIC X(07) VALUE SPACES.
+   88                        03 WKS-NOMB       PIC X(21).
+   89                        03 FILLER         PIC X(02) VALUE SPACES.
+   90                        03 WKS-TIPT       PIC X(10).
+   91                        03 FILLER         PIC X(03) VALUE SPACES.
+   92                        03 FILLER         PIC X(02) VALUE "20".
+   93                        03 WKS-FECH       PIC 9(06).
+   94                        03 FILLER         PIC X(07) VALUE SPACES.
+   95                        03 WKS-ANUF       PIC $$$,$$9.99.
+   96
+   97                    01 WKS-TOT1.
+   98                        03 FILLER         PIC X(38) VALUE SPACES.
+   99                        03 FILLER         PIC X(18) VALUE "TOTAL DE CLIENTES:".
+  100                        03 FILLER         PIC X(09) VALUE SPACES.
+  101                        03 WKS-TOCLI      PIC 99.
+  102
+  103
+  104                    PROCEDURE DIVISION.
+  105    000002             PRINCIPAL SECTION.
+  106    000005          INICIO.
+  107    000008              SORT SOR-TEM
+  108                        ASCENDING NOM-CLI-S
+  109                        INPUT PROCEDURE 1000-ORDENA-ARCHIVO
+  110                        OUTPUT PROCEDURE 2000-GENERA-REPORTE
+  111    000019              STOP RUN.
+  112
+  113    000023          1000-ORDENA-ARCHIVO SECTION.
+  114    000026             INICIO-ORDENA.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/14/23  19:47:19 PAGE   3
+SOURCE FILE: SORT-PRO                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   SORT-PRO
+
+  115    000029              PERFORM 1200-INICIO.
+  116    000032              PERFORM 1500-PROCESO UNTIL WKS-FIN = 1.
+  117    000043              PERFORM 1700-FIN.
+  118    000046                 GO TO 1800-FIN-SECTION.
+  119
+  120    000049          1200-INICIO.
+  121    000052              OPEN INPUT CLIENTES.
+  122
+  123    000059              DISPLAY SPACES LINE 01 POSITION 01 ERASE.
+  124
+  125    000073              READ CLIENTES
+  126                            AT END MOVE 1 TO WKS-FIN.
+  127
+  128    000088              DISPLAY "QUE TIPO DE TARJETA QUIERES CONSULTAR?:"
+  129                            LINE 10 POSITION 05.
+  130    000101              ACCEPT WKS-NOM-TAR LINE 10 POSITION 50.
+  131
+  132    000115          1500-PROCESO.
+  133
+  134    000118              IF WKS-NOM-TAR = NOM-TAR
+  135                            MOVE REG-CLI TO REG-CLI-S
+  136                            RELEASE REG-CLI-S.
+  137
+  138    000139              READ CLIENTES
+  139                        AT END MOVE 1 TO WKS-FIN.
+  140
+  141    000157          1700-FIN.
+  142    000160              CLOSE CLIENTES.
+  143
+  144    000167              INITIALIZE WKS-FIN.
+  145
+  146    000175             1800-FIN-SECTION.
+  147    000178                 EXIT.
+  148
+  149
+  150    000183          2000-GENERA-REPORTE SECTION.
+  151    000186             INICIO-REPORTE.
+  152    000189              PERFORM 2200-INICIO.
+  153    000192              PERFORM 2500-PROCESO UNTIL WKS-FIN = 1.
+  154    000203              PERFORM 2700-FIN.
+  155    000206                 GO TO 2800-FIN-SECTION.
+  156
+  157    000209          2200-INICIO.
+  158
+  159    000212              OPEN OUTPUT REP-SOR
+  160    000219              RETURN SOR-TEM
+  161                            AT END MOVE 1 TO WKS-FIN.
+  162
+  163    000232              PERFORM 2220-GENERA-ENCABEZADO.
+  164
+  165    000238          2220-GENERA-ENCABEZADO.
+  166
+  167    000241              ADD 1                   TO WKS-NUM-PAGA.
+  168    000245              MOVE SPACES             TO LINEA.
+  169    000251              MOVE WKS-ENCA           TO LINEA.
+  170    000259              WRITE LINEA AFTER PAGE.
+  171
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/14/23  19:47:19 PAGE   4
+SOURCE FILE: SORT-PRO                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   SORT-PRO
+
+  172    000268              ACCEPT WKS-HOY FROM DATE.
+  173    000274              MOVE CORR WKS-HOY       TO WKS-ENCB.
+  174
+  175    000293              MOVE WKS-ENCB           TO LINEA.
+  176    000301              WRITE LINEA AFTER 1.
+  177
+  178    000313              MOVE WKS-NOM-TAR            TO WKS-NOM-TARB.
+  179    000320              MOVE WKS-ENCBB          TO LINEA.
+  180    000328              WRITE LINEA AFTER 2.
+  181
+  182    000340              MOVE WKS-ENCC           TO LINEA.
+  183    000348              WRITE LINEA AFTER 2.
+  184    000360              MOVE 3                  TO WKS-CONT-LIN.
+  185
+  186    000369          2500-PROCESO.
+  187
+  188    000372              MOVE ID-CLIENTE-S         TO WKS-ID.
+  189    000379              MOVE NOM-CLI-S            TO WKS-NOMB.
+  190    000386              MOVE NOM-TAR-S            TO WKS-TIPT.
+  191    000393              MOVE FEC-ING-S            TO WKS-FECH.
+  192    000398              MOVE ANUA-S               TO WKS-ANUF.
+  193
+  194    000403              IF WKS-CONT-LIN > 60
+  195                            PERFORM 2220-GENERA-ENCABEZADO.
+  196
+  197    000413              MOVE WKS-DET1 TO LINEA
+  198    000422              WRITE LINEA AFTER 1
+  199    000434              ADD 1 TO WKS-TOTAL-CLI.
+  200
+  201    000438              RETURN SOR-TEM
+  202                            AT END MOVE 1 TO WKS-FIN.
+  203
+  204    000453          2700-FIN.
+  205
+  206    000456              MOVE WKS-TOTAL-CLI      TO WKS-TOCLI.
+  207
+  208    000463              MOVE WKS-TOT1           TO LINEA.
+  209    000471              WRITE LINEA AFTER 2.
+  210
+  211    000483              CLOSE REP-SOR.
+  212
+  213    000492             2800-FIN-SECTION.
+  214    000495                 EXIT.
+  215
+  216
+  217
+  218
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/14/23  19:47:19 PAGE   5
+SOURCE FILE: SORT-PRO                   OPTIONS: L
+
+PROGRAM SUMMARY STATISTICS                                                                           SORT-PRO
+
+
+READ ONLY SIZE =                      1070 (X"0000042E") BYTES
+
+READ/WRITE SIZE =                     1272 (X"000004F8") BYTES
+
+OVERLAYABLE SEGMENT SIZE =               0 (X"00000000") BYTES
+
+TOTAL SIZE (LESS I/O BUFFERS) =       2342 (X"00000926") BYTES      218 LINES
+
+    0 ERRORS         0 WARNINGS     FOR PROGRAM SORT-PRO
+
+
+
+OBJECT VERSION LEVEL =   1
+

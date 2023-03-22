@@ -1,0 +1,246 @@
+
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/16/23  10:14:49 PAGE   1
+SOURCE FILE: T-ANUAL                    OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8
+
+    1                    IDENTIFICATION DIVISION.
+    2                    PROGRAM-ID. T-ANUAL.
+    3                    ENVIRONMENT DIVISION.
+    4                    INPUT-OUTPUT SECTION.
+    5                    FILE-CONTROL.
+    6                        SELECT CLIENTES ASSIGN TO DISK.
+    7                        SELECT RTANUAL ASSIGN TO PRINTER.
+    8                    DATA DIVISION.
+    9                    FILE SECTION.
+   10                    FD CLIENTES.
+   11                    01 REG-CLI.
+   12                        03 ID-CLIENTE     PIC 9(03).
+   13                        03 NOM-CLI        PIC X(30).
+   14                        03 CLA-TAR        PIC 9.
+   15                        03 NOM-TAR        PIC X(20).
+   16                        03 ANUA           PIC 9(05)V99.
+   17                        03 FEC-ING        PIC 9(08).
+   18
+   19                    FD RTANUAL.
+   20                    01 LINEA              PIC X(132).
+   21
+   22                    WORKING-STORAGE SECTION.
+   23                    01 WKS-TOTAN          PIC 9(07)V99.
+   24                    01 WKS-PRO            PIC 9(06)V99.
+   25                    01 WKS-CONT-LIN       PIC 99.
+   26                    01 WKS-INDEX          PIC 9.
+   27
+   28                    01 WKS-PRO-F          PIC $$$$,$$9.99.
+   29
+   30                    77 WKS-I              PIC 99.
+   31                    77 WKS-J              PIC 99.
+   32                    77 WKS-FIN            PIC 9.
+   33                    77 WKS-ESTA           PIC 9.
+   34
+   35                    01 WKS-HOY.
+   36                        05 WKS-ANO        PIC 99.
+   37                        05 WKS-MES        PIC 99.
+   38                        05 WKS-DIA        PIC 99.
+   39
+   40                   * 01 WKS-TARJETAS.
+   41                   *     03 FILLER PIC X(07) VALUE "CREDITO".
+   42                   *     03 FILLER PIC X(07) VALUE "DEBITO".
+   43                   *     03 FILLER PIC X(07) VALUE "NOMINA".
+   44
+   45                   * 01 T-TARJETAS REDEFINES WKS-TARJETAS.
+   46
+   47                    01 T-TARJETAS.
+   48                        03 T-TAR OCCURS 3 TIMES PIC X(07).
+   49
+   50                    01 T-ANUA.
+   51                        03 T-A OCCURS 3 TIMES PIC 9(06)V99.
+   52
+   53                   *------VARIABLES-DE-REPORTE-----------*
+   54                    01 WKS-ENCA.
+   55                        03 FILLER         PIC X(10) VALUE SPACES.
+   56                        03 FILLER         PIC X(55) VALUE
+   57                          "REPORTE POR TOTAL DE ANUALIDADES DE TIPO DE TARJETA".
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/16/23  10:14:49 PAGE   2
+SOURCE FILE: T-ANUAL                    OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   T-ANUAL
+
+   58
+   59                    01 WKS-ENCB.
+   60                   *       03 FILLER         PIC X(03) VALUE SPACES.
+   61                        03 FILLER         PIC X(18)
+   62                                VALUE "FECHA DE PROCESO: ".
+   63                        03 WKS-DIA        PIC 99.
+   64                        03 FILLER         PIC X VALUE "/".
+   65                        03 WKS-MES        PIC 99.
+   66                        03 FILLER         PIC XXX VALUE "/20".
+   67                        03 WKS-ANO        PIC 99.
+   68                        03 FILLER         PIC X(36) VALUE SPACES.
+   69                        03 FILLER         PIC X(07) VALUE "PAG. : ".
+   70                        03 WKS-NUM-PAGA   PIC 9(02).
+   71
+   72
+   73                    01 WKS-ENCC.
+   74                   *       03 FILLER         PIC X(03) VALUE SPACES.
+   75                        03 FILLER         PIC X(10) VALUE SPACES.
+   76                        03 FILLER         PIC X(02) VALUE SPACES.
+   77                        03 FILLER         PIC X(15) VALUE "TIPO DE TARJETA".
+   78                        03 FILLER         PIC X(01) VALUE SPACES.
+   79                        03 FILLER         PIC X(20) VALUE SPACES.
+   80                        03 FILLER         PIC X(03) VALUE SPACES.
+   81                        03 FILLER         PIC X(14) VALUE "ANUALIDAD".
+   82                        03 FILLER         PIC X(03) VALUE SPACES.
+   83                        03 FILLER         PIC X(09) VALUE SPACES.
+   84
+   85                    01 WKS-DET1.
+   86                        03 FILLER         PIC X(02) VALUE SPACES.
+   87                        03 FILLER         PIC XXX   VALUE SPACES.
+   88                        03 FILLER         PIC X(07) VALUE SPACES.
+   89                        03 WKS-TIPT       PIC X(21).
+   90                        03 FILLER         PIC X(02) VALUE SPACES.
+   91                        03 FILLER         PIC X(10) VALUE SPACES.
+   92                        03 FILLER         PIC X(03) VALUE SPACES.
+   93                        03 FILLER         PIC X(02) VALUE SPACES.
+   94                        03 WKS-ANUF       PIC $$$,$$9.99.
+   95                        03 FILLER         PIC X(07) VALUE SPACES.
+   96                        03 FILLER         PIC X(06) VALUE SPACES.
+   97
+   98                    01 WKS-LINEA-SOLIDA   PIC X(73).
+   99
+  100                    01 WKS-TOT1.
+  101                        03 FILLER         PIC X(23) VALUE SPACES.
+  102                        03 FILLER         PIC X(18) VALUE "TOTAL:            ".
+  103                        03 FILLER         PIC X(09) VALUE SPACES.
+  104                        03 WKS-TOA        PIC $$$,$$9.99.
+  105
+  106
+  107                    PROCEDURE DIVISION.
+  108    000002          INICIO.
+  109    000005              PERFORM 1000-INICIO.
+  110    000008              PERFORM 2000-PROCESO.
+  111    000011              PERFORM 3000-FIN.
+  112    000014              STOP RUN.
+  113
+  114    000017          1000-INICIO.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/16/23  10:14:49 PAGE   3
+SOURCE FILE: T-ANUAL                    OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   T-ANUAL
+
+  115    000020              OPEN INPUT CLIENTES.
+  116    000027              OPEN OUTPUT RTANUAL.
+  117
+  118    000034              DISPLAY SPACES LINE 01 POSITION 01 ERASE.
+  119    000048              DISPLAY "GENERANDO REPORTE" LINE 10 POSITION 10.
+  120    000060              PERFORM 1100-GENERA-ENCABEZADO.
+  121
+  122    000063              READ CLIENTES
+  123                        AT END MOVE 1 TO WKS-FIN.
+  124
+  125
+  126    000080          1100-GENERA-ENCABEZADO.
+  127
+  128    000083              ADD 1                   TO WKS-NUM-PAGA.
+  129    000087              MOVE SPACES             TO LINEA.
+  130    000093              MOVE WKS-ENCA           TO LINEA.
+  131    000101              WRITE LINEA AFTER PAGE.
+  132
+  133    000110              ACCEPT WKS-HOY FROM DATE.
+  134    000116              MOVE CORR WKS-HOY       TO WKS-ENCB.
+  135
+  136    000135              MOVE WKS-ENCB           TO LINEA.
+  137    000143              WRITE LINEA AFTER 1.
+  138
+  139
+  140    000155              MOVE WKS-ENCC           TO LINEA.
+  141    000164              WRITE LINEA AFTER 2.
+  142    000176              MOVE 3                  TO WKS-CONT-LIN.
+  143
+  144
+  145    000185          2000-PROCESO.
+  146    000188              PERFORM 2050-LEER-CARGAR UNTIL WKS-FIN = 1.
+  147
+  148    000199              PERFORM 2200-EXTRAER VARYING WKS-J
+  149                            FROM 1 BY 1 UNTIL WKS-J > 3.
+  150
+  151
+  152    000221          2050-LEER-CARGAR.
+  153    000224              INITIALIZE WKS-I.
+  154    000230              PERFORM 2100-LLENA-TABLA VARYING WKS-I
+  155                            FROM 1 BY 1 UNTIL WKS-I > 3.
+  156                   *------------------------------------------------------
+  157
+  158    000250              IF WKS-ESTA = 0
+  159                            ADD 1 TO WKS-INDEX
+  160                            MOVE NOM-TAR TO T-TAR (WKS-INDEX)
+  161                            ADD ANUA TO T-A (WKS-INDEX).
+  162
+  163    000281              INITIALIZE WKS-ESTA.
+  164
+  165
+  166    000288              READ CLIENTES
+  167                        AT END MOVE 1 TO WKS-FIN.
+  168
+  169
+  170    000306          2100-LLENA-TABLA.
+  171
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/16/23  10:14:49 PAGE   4
+SOURCE FILE: T-ANUAL                    OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   T-ANUAL
+
+  172                   *     IF NOM-TAR = T-TAR (WKS-I)
+  173                   *         MOVE 1 TO WKS-ESTA.
+  174                   *         ADD 1 TO WKS-INDEX.
+  175
+  176
+  177                   *------------------------------------------------------
+  178    000309              IF NOM-TAR = T-TAR (WKS-I)
+  179                            MOVE 1 TO WKS-ESTA
+  180                            ADD ANUA TO T-A (WKS-I).
+  181
+  182
+  183    000340          2200-EXTRAER.
+  184    000343              MOVE T-TAR (WKS-J) TO WKS-TIPT.
+  185    000353              MOVE T-A (WKS-J) TO WKS-ANUF.
+  186    000362              ADD T-A (WKS-J) TO WKS-TOTAN.
+  187
+  188    000372              MOVE WKS-DET1 TO LINEA.
+  189    000380              WRITE LINEA AFTER 1.
+  190
+  191
+  192    000394          3000-FIN.
+  193
+  194    000397              MOVE ALL "-" TO WKS-LINEA-SOLIDA.
+  195    000403              MOVE WKS-LINEA-SOLIDA TO LINEA.
+  196    000411              WRITE LINEA.
+  197
+  198    000418              MOVE WKS-TOTAN TO WKS-TOA.
+  199    000423              MOVE WKS-TOT1 TO LINEA.
+  200    000431              WRITE LINEA AFTER 1.
+  201
+  202    000443              CLOSE CLIENTES.
+  203    000450              CLOSE RTANUAL.
+  204
+  205
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/16/23  10:14:49 PAGE   5
+SOURCE FILE: T-ANUAL                    OPTIONS: L
+
+PROGRAM SUMMARY STATISTICS                                                                           T-ANUAL
+
+
+READ ONLY SIZE =                       970 (X"000003CA") BYTES
+
+READ/WRITE SIZE =                     1076 (X"00000434") BYTES
+
+OVERLAYABLE SEGMENT SIZE =               0 (X"00000000") BYTES
+
+TOTAL SIZE (LESS I/O BUFFERS) =       2046 (X"000007FE") BYTES      205 LINES
+
+    0 ERRORS         0 WARNINGS     FOR PROGRAM T-ANUAL
+
+
+
+OBJECT VERSION LEVEL =   1
+

@@ -1,0 +1,74 @@
+
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/21/23  17:42:51 PAGE   1
+SOURCE FILE: LINK-CAT                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8
+
+    1                    IDENTIFICATION DIVISION.
+    2                    PROGRAM-ID. LINK-CAT.
+    3                    ENVIRONMENT DIVISION.
+    4
+    5                    DATA DIVISION.
+    6
+    7                    WORKING-STORAGE SECTION.
+    8                       01 WKS-DATOS.
+    9                           03 FILLER     PIC X(12) VALUE "1DEBITO 1000".
+   10                           03 FILLER     PIC X(12) VALUE "2CREDITO3500".
+   11                           03 FILLER     PIC X(12) VALUE "3NOMINA 0000".
+   12
+   13                       01 T-DATOS REDEFINES WKS-DATOS.
+   14                           03 T-DAT OCCURS 3 TIMES
+   15                               ASCENDING KEY IS T-CLA INDEXED BY WKS-I.
+   16                               05 T-CLA PIC 9.
+   17                               05 T-NOM PIC X(07).
+   18                               05 T-ANU PIC 9999.
+   19
+   20                    LINKAGE SECTION.
+   21                    01 REG-CLI.
+   22                        03 ID-CLIENTE PIC 9(03).
+   23                        03 NOM-CLI    PIC X(30).
+   24                        03 CLA-TAR    PIC 9.
+   25                        03 NOM-TAR    PIC X(20).
+   26                        03 ANUA       PIC 9(05)V99.
+   27                        03 FEC-ING    PIC 9(08).
+   28
+   29                    PROCEDURE DIVISION
+   30                           USING REG-CLI.
+   31    000002          INICIO.
+   32    000005              PERFORM 1000-INICIO.
+   33    000008              PERFORM 2000-PROCESO.
+   34    000011              PERFORM 3000-FIN.
+   35    000014              EXIT PROGRAM.
+   36
+   37    000019          1000-INICIO.
+   38    000022              ACCEPT CLA-TAR LINE 12 POSITION 33.
+   39
+   40    000036          2000-PROCESO.
+   41
+   42    000039              SEARCH ALL T-DAT
+   43                        AT END DISPLAY "NO EXISTE" LINE 12 POSITION 05
+   44                        WHEN T-CLA (WKS-I) = CLA-TAR
+   45                        MOVE T-NOM (WKS-I) TO NOM-TAR
+   46                           MOVE T-ANU (WKS-I) TO ANUA.
+   47
+   48    000095          3000-FIN.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/21/23  17:42:51 PAGE   2
+SOURCE FILE: LINK-CAT                   OPTIONS: L
+
+PROGRAM SUMMARY STATISTICS                                                                           LINK-CAT
+
+
+READ ONLY SIZE =                       450 (X"000001C2") BYTES
+
+READ/WRITE SIZE =                       84 (X"00000054") BYTES
+
+OVERLAYABLE SEGMENT SIZE =               0 (X"00000000") BYTES
+
+TOTAL SIZE (LESS I/O BUFFERS) =        534 (X"00000216") BYTES       48 LINES
+
+    0 ERRORS         0 WARNINGS     FOR PROGRAM LINK-CAT
+
+
+
+OBJECT VERSION LEVEL =   1
+

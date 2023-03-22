@@ -1,0 +1,166 @@
+
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/21/23  10:38:10 PAGE   1
+SOURCE FILE: T-LINCA                    OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8
+
+    1                    IDENTIFICATION DIVISION.
+    2                    PROGRAM-ID. T-LINCA.
+    3                    ENVIRONMENT DIVISION.
+    4                    DATA DIVISION.
+    5                    WORKING-STORAGE SECTION.
+    6
+    7                   *---------------TABLAS----------------*
+    8                    01 WKS-ALF-NUM.
+    9                        03 FILLER               PIC Xxx VALUE " 00".
+   10                        03 FILLER               PIC Xxx VALUE "A01".
+   11                        03 FILLER               PIC Xxx VALUE "B02".
+   12                        03 FILLER               PIC Xxx VALUE "C03".
+   13                        03 FILLER               PIC Xxx VALUE "D04".
+   14                        03 FILLER               PIC Xxx VALUE "E05".
+   15                        03 FILLER               PIC Xxx VALUE "F06".
+   16                        03 FILLER               PIC Xxx VALUE "G07".
+   17                        03 FILLER               PIC Xxx VALUE "H08".
+   18                        03 FILLER               PIC Xxx VALUE "I09".
+   19                        03 FILLER               PIC Xxx VALUE "J10".
+   20                        03 FILLER               PIC Xxx VALUE "K11".
+   21                        03 FILLER               PIC Xxx VALUE "L12".
+   22                        03 FILLER               PIC Xxx VALUE "M13".
+   23                        03 FILLER               PIC Xxx VALUE "N14".
+   24                        03 FILLER               PIC Xxx VALUE "O15".
+   25                        03 FILLER               PIC Xxx VALUE "P16".
+   26                        03 FILLER               PIC Xxx VALUE "Q17".
+   27                        03 FILLER               PIC Xxx VALUE "R18".
+   28                        03 FILLER               PIC Xxx VALUE "S19".
+   29                        03 FILLER               PIC Xxx VALUE "T20".
+   30                        03 FILLER               PIC Xxx VALUE "U21".
+   31                        03 FILLER               PIC Xxx VALUE "V22".
+   32                        03 FILLER               PIC Xxx VALUE "W23".
+   33                        03 FILLER               PIC Xxx VALUE "X24".
+   34                        03 FILLER               PIC Xxx VALUE "Y25".
+   35                        03 FILLER               PIC Xxx VALUE "Z26".
+   36
+   37                    01 T-ALF-NUM REDEFINES WKS-ALF-NUM.
+   38                        03 T-AL-NU OCCURS 27 TIMES.
+   39                            05 T-ALF PIC X.
+   40                            05 T-NUM PIC 99.
+   41
+   42                    01 WKS-CALEN.
+   43                        03 FILLER    PIC X(12) VALUE "ENERO     31".
+   44                        03 FILLER    PIC X(12) VALUE "FEBRERO   28".
+   45                        03 FILLER    PIC X(12) VALUE "MARZO     31".
+   46                        03 FILLER    PIC X(12) VALUE "ABRIL     30".
+   47                        03 FILLER    PIC X(12) VALUE "MAYO      31".
+   48                        03 FILLER    PIC X(12) VALUE "JUNIO     30".
+   49                        03 FILLER    PIC X(12) VALUE "JULIO     31".
+   50                        03 FILLER    PIC X(12) VALUE "AGOSTO    31".
+   51                        03 FILLER    PIC X(12) VALUE "SEPTIEMBRE30".
+   52                        03 FILLER    PIC X(12) VALUE "OCTUBRE   31".
+   53                        03 FILLER    PIC X(12) VALUE "NOVIEMBRE 30".
+   54                        03 FILLER    PIC X(12) VALUE "DICIEMBRE 31".
+   55
+   56                    01 T-CALEN REDEFINES WKS-CALEN.
+   57                        03 T-CAL OCCURS 12 TIMES.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/21/23  10:38:10 PAGE   2
+SOURCE FILE: T-LINCA                    OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   T-LINCA
+
+   58                            05 T-MES PIC X(10).
+   59                            05 T-DIA PIC 99.
+   60
+   61                   *---------------VARIABLES----------------*
+   62
+   63                    77 WKS-I        PIC 99.
+   64                    77 WKS-J        PIC 99.
+   65                    77 WKS-ESC      PIC 9.
+   66                    77 WKS-ESPERA   PIC X.
+   67
+   68                    01 WKS-LINEA.
+   69                        03 FILLER   PIC 9(6).
+   70                        03 WKS-LI   PIC X.
+   71                        03 WKS-LD   PIC X.
+   72                        03 FILLER   PIC 9999.
+   73
+   74                    01 WKS-RESI     PIC 99.
+   75                    01 WKS-SUMA     PIC 999.
+   76                    01 WKS-MULT     PIC 999.
+   77
+   78                    01 WKS-ACO      PIC 999.
+   79                    01 WKS-DACT     PIC 99.
+   80
+   81                    PROCEDURE DIVISION.
+   82    000002          INICIO.
+   83    000005              PERFORM 1000-INICIO.
+   84    000008              PERFORM 2000-PROCESO.
+   85    000011              PERFORM 3000-FIN.
+   86    000014              STOP RUN.
+   87
+   88    000017          1000-INICIO.
+   89    000020              DISPLAY SPACES ERASE.
+   90    000028              DISPLAY "INTRODUCE LINEA DE CAPTURA:" LINE 05 POSITION 05.
+   91    000040              ACCEPT WKS-LINEA LINE 05 POSITION 45.
+   92
+   93    000054          2000-PROCESO.
+   94    000057              PERFORM 2100-LETRAS-DIGITO VARYING WKS-I
+   95                            FROM 1 BY 1 UNTIL WKS-I > 27.
+   96
+   97                   *     DISPLAY WKS-SUMA LINE 10 POSITION 10.
+   98
+   99    000077              PERFORM 2200-DIGITO-FECHA VARYING WKS-J
+  100                            FROM 1 BY 1 UNTIL WKS-J > 12.
+  101
+  102    000100          2100-LETRAS-DIGITO.
+  103    000103              IF WKS-LI = T-ALF (WKS-I)
+  104                            SUBTRACT 1 FROM WKS-I GIVING WKS-RESI
+  105                            MULTIPLY T-NUM (WKS-RESI) BY 26 GIVING WKS-MULT
+  106                            ADD WKS-MULT TO WKS-SUMA
+  107                            ADD 1 TO WKS-ESC.
+  108
+  109    000143              IF WKS-LD = T-ALF (WKS-I)
+  110                            ADD T-NUM (WKS-I) TO WKS-SUMA
+  111                            ADD 1 TO WKS-ESC.
+  112
+  113    000170              IF WKS-ESC = 2
+  114                            ADD 30 TO WKS-I.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/21/23  10:38:10 PAGE   3
+SOURCE FILE: T-LINCA                    OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   T-LINCA
+
+  115
+  116    000186          2200-DIGITO-FECHA.
+  117    000189              ADD T-DIA (WKS-J) TO WKS-ACO.
+  118
+  119    000199              IF WKS-ACO GREATER THAN OR EQUAL TO WKS-SUMA
+  120                            SUBTRACT 1 FROM WKS-J GIVING WKS-RESI
+  121                            SUBTRACT T-DIA (WKS-J) FROM WKS-ACO
+  122
+  123                            SUBTRACT WKS-ACO FROM WKS-SUMA GIVING WKS-DACT
+  124                            DISPLAY "DIA DE PAGO: " LINE 9 POSITION 05
+  125                            DISPLAY WKS-DACT LINE 9 POSITION 35
+  126                            DISPLAY "MES: " LINE 10 POSITION 05
+  127                            DISPLAY T-MES (WKS-J) LINE 10 POSITION 35
+  128                            MOVE 15 TO WKS-J.
+  129
+  130    000292          3000-FIN.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/21/23  10:38:10 PAGE   4
+SOURCE FILE: T-LINCA                    OPTIONS: L
+
+PROGRAM SUMMARY STATISTICS                                                                           T-LINCA
+
+
+READ ONLY SIZE =                       818 (X"00000332") BYTES
+
+READ/WRITE SIZE =                      316 (X"0000013C") BYTES
+
+OVERLAYABLE SEGMENT SIZE =               0 (X"00000000") BYTES
+
+TOTAL SIZE (LESS I/O BUFFERS) =       1134 (X"0000046E") BYTES      130 LINES
+
+    0 ERRORS         0 WARNINGS     FOR PROGRAM T-LINCA
+
+
+
+OBJECT VERSION LEVEL =   1
+

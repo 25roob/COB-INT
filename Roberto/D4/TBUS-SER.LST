@@ -1,0 +1,63 @@
+
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/16/23  17:46:28 PAGE   1
+SOURCE FILE: TBUS-SER                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8
+
+    1                    IDENTIFICATION DIVISION.
+    2                    PROGRAM-ID. TBUS-SER.
+    3                    ENVIRONMENT DIVISION.
+    4
+    5                    DATA DIVISION.
+    6                    WORKING-STORAGE SECTION.
+    7
+    8
+    9
+   10                       01 WKS-T-A.
+   11                        03 FILLER    PIC X(12) VALUE "DEBITO 87654".
+   12                        03 FILLER    PIC X(12) VALUE "NOMINA 56543".
+   13                        03 FILLER    PIC X(12) VALUE "CREDITO23456".
+   14
+   15                    01 T-ANUAL REDEFINES WKS-T-A.
+   16                        03 T-TAR-ANU OCCURS 3 TIMES INDEXED BY WKS-I.
+   17                            05 T-TAR PIC X(7).
+   18                            05 T-ANU PIC 9(05).
+   19
+   20
+   21
+   22                    01 WKS-TIPO-TAR-U  PIC X(7).
+   23
+   24                    PROCEDURE DIVISION.
+   25    000002          INICIO.
+   26    000005                 DISPLAY SPACES ERASE.
+   27    000013              DISPLAY "TIPO DE TARJETA: " LINE 10 POSITION 05.
+   28    000025              ACCEPT WKS-TIPO-TAR-U LINE 10 POSITION 35.
+   29    000037              DISPLAY "ANUALIDAD: " LINE 11 POSITION 05.
+   30
+   31
+   32    000049                 SET WKS-I TO 1
+   33    000054              SEARCH T-TAR-ANU VARYING WKS-I
+   34                        AT END DISPLAY "NO EXISTE" LINE 12 POSITION 05
+   35                        WHEN T-TAR (WKS-I) = WKS-TIPO-TAR-U
+   36                        DISPLAY T-ANU (WKS-I) LINE 11 POSITION 35.
+   37    000112              STOP RUN.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/16/23  17:46:28 PAGE   2
+SOURCE FILE: TBUS-SER                   OPTIONS: L
+
+PROGRAM SUMMARY STATISTICS                                                                           TBUS-SER
+
+
+READ ONLY SIZE =                       466 (X"000001D2") BYTES
+
+READ/WRITE SIZE =                       60 (X"0000003C") BYTES
+
+OVERLAYABLE SEGMENT SIZE =               0 (X"00000000") BYTES
+
+TOTAL SIZE (LESS I/O BUFFERS) =        526 (X"0000020E") BYTES       37 LINES
+
+    0 ERRORS         0 WARNINGS     FOR PROGRAM TBUS-SER
+
+
+
+OBJECT VERSION LEVEL =   1
+

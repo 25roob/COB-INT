@@ -1,0 +1,164 @@
+
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/17/23  17:59:58 PAGE   1
+SOURCE FILE: TBID-HOR                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8
+
+    1                    IDENTIFICATION DIVISION.
+    2                    PROGRAM-ID. TBID-HOR.
+    3                    ENVIRONMENT DIVISION.
+    4
+    5                    DATA DIVISION.
+    6                    WORKING-STORAGE SECTION.
+    7
+    8                   *----------------TABLAS----------------------*
+    9
+   10                    01 WKS-DIAS.
+   11                        03 FILLER    PIC X(09) VALUE "LUNES".
+   12                        03 FILLER    PIC X(09) VALUE "MARTES".
+   13                        03 FILLER    PIC X(09) VALUE "MIERCOLES".
+   14                        03 FILLER    PIC X(09) VALUE "JUEVES".
+   15                        03 FILLER    PIC X(09) VALUE "VIERNES".
+   16
+   17                    01 T-DIAS REDEFINES WKS-DIAS.
+   18                        03 T-DI OCCURS 5 TIMES PIC X(09).
+   19
+   20                    01 WKS-MATERIAS.
+   21                        03 FILLER    PIC XXXX VALUE "SO".
+   22                        03 FILLER    PIC XXXX VALUE "BD".
+   23                        03 FILLER    PIC XXXX VALUE "RDS".
+   24                        03 FILLER    PIC XXXX VALUE "IA".
+   25
+   26                    01 T-MATERIAS REDEFINES WKS-MATERIAS.
+   27                        03 T-MA OCCURS 4 TIMES PIC XXXX.
+   28
+   29
+   30                    01 T-HORARIOS.
+   31                        03 T-MATERIAS OCCURS 4 TIMES.
+   32                            05 T-DIAS OCCURS 5 TIMES.
+   33                                07 T-HORA PIC 9999.
+   34
+   35                   *------------------VARIABLES----------------*
+   36
+   37                    77 WKS-I         PIC 9.
+   38                    77 WKS-J         PIC 9.
+   39                    77 WKS-K         PIC 9.
+   40                    77 WKS-L         PIC 9.
+   41
+   42                   *-----------------LATERAL-------------------*
+   43                    01 WKS-LIN-S     PIC 99 VALUE 5.
+   44                    01 WKS-POS-S     PIC 99 VALUE 5.
+   45                    01 WKS-DISMAS    PIC 99.
+   46
+   47                   *-----------------CABECERA------------------*
+   48
+   49                    01 WKS-LIN-H     PIC 99  VALUE 5.
+   50                    01 WKS-POS-H     PIC 999.
+   51                    01 WKS-DISMAS2   PIC 99.
+   52
+   53
+   54                    PROCEDURE DIVISION.
+   55    000002          INICIO.
+   56    000005              PERFORM 1000-INICIO.
+   57    000008              PERFORM 2000-PROCESO.
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/17/23  17:59:58 PAGE   2
+SOURCE FILE: TBID-HOR                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   TBID-HOR
+
+   58    000011              PERFORM 3000-FIN.
+   59    000014              STOP RUN.
+   60
+   61    000017          1000-INICIO.
+   62    000020              DISPLAY SPACES ERASE.
+   63
+   64    000030          2000-PROCESO.
+   65    000033              PERFORM 2100-LLENA-TABLA
+   66                            VARYING WKS-I FROM 1 BY 1 UNTIL WKS-I > 4
+   67                            AFTER WKS-J FROM 1 BY 1 UNTIL WKS-J > 5.
+   68
+   69    000068              DISPLAY SPACES ERASE.
+   70
+   71    000077              PERFORM 2200-DESPLIEGA-TABLA
+   72                            VARYING WKS-K FROM 1 BY 1 UNTIL WKS-K > 4
+   73                            AFTER WKS-L FROM 1 BY 1 UNTIL WKS-L > 5.
+   74
+   75    000114          2100-LLENA-TABLA.
+   76
+   77    000117              DISPLAY "INTRODUCE HORARIO DE " T-MA (WKS-I) T-DI (WKS-J)
+   78                             ":".
+   79    000146              ACCEPT T-HORA (WKS-I WKS-J).
+   80
+   81
+   82    000162          2200-DESPLIEGA-TABLA.
+   83
+   84
+   85    000165              DISPLAY T-MA (WKS-K) ", " T-DI (WKS-L) " ES "
+   86                               T-HORA (WKS-K WKS-L).
+   87
+   88
+   89
+   90
+   91    000210          COMENTADO.
+   92                   *-------------LATERAL1-----------------*
+   93
+   94    000213              IF WKS-LIN-S > 8
+   95                            MOVE 5 TO WKS-LIN-S.
+   96
+   97    000228              ADD 1 TO WKS-LIN-S.
+   98
+   99    000233              IF WKS-DISMAS > 3
+  100                            MOVE 0 TO WKS-DISMAS.
+  101
+  102    000247              ADD 1 TO WKS-DISMAS.
+  103
+  104    000252              DISPLAY T-MA (WKS-DISMAS) LINE WKS-LIN-S POSITION WKS-POS-S.
+  105
+  106                   *-------------CABECERA1-----------------*
+  107    000268              IF WKS-POS-H > 50
+  108                            MOVE 0 TO WKS-POS-H.
+  109
+  110    000283              ADD 12 TO WKS-POS-H.
+  111
+  112    000290              IF WKS-DISMAS2 > 4
+  113                            MOVE 0 TO WKS-DISMAS2.
+  114
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/17/23  17:59:58 PAGE   3
+SOURCE FILE: TBID-HOR                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   TBID-HOR
+
+  115    000304              ADD 1 TO WKS-DISMAS2.
+  116
+  117    000309              DISPLAY T-DI (WKS-DISMAS2)
+  118                            LINE WKS-LIN-H POSITION WKS-POS-H.
+  119
+  120    000327          3000-FIN.
+  121
+  122
+  123
+  124
+  125
+  126
+  127
+  128
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/17/23  17:59:58 PAGE   4
+SOURCE FILE: TBID-HOR                   OPTIONS: L
+
+PROGRAM SUMMARY STATISTICS                                                                           TBID-HOR
+
+
+READ ONLY SIZE =                       794 (X"0000031A") BYTES
+
+READ/WRITE SIZE =                      224 (X"000000E0") BYTES
+
+OVERLAYABLE SEGMENT SIZE =               0 (X"00000000") BYTES
+
+TOTAL SIZE (LESS I/O BUFFERS) =       1018 (X"000003FA") BYTES      128 LINES
+
+    0 ERRORS         0 WARNINGS     FOR PROGRAM TBID-HOR
+
+
+
+OBJECT VERSION LEVEL =   1
+

@@ -1,0 +1,102 @@
+
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/21/23  17:48:06 PAGE   1
+SOURCE FILE: PARC-SEC                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8
+
+    1                       IDENTIFICATION DIVISION.
+    2                       PROGRAM-ID. PARC-SEC.
+    3                       ENVIRONMENT DIVISION.
+    4                       INPUT-OUTPUT SECTION.
+    5                       FILE-CONTROL.
+    6                           SELECT CLIENTE2 ASSIGN TO DISK.
+    7                       DATA DIVISION.
+    8                       FILE SECTION.
+    9                       FD CLIENTE2.
+   10                   *
+   11                       01 REG-CLI.
+   12                           03 ID-CLIENTE PIC 9(03).
+   13                           03 NOM-CLI    PIC X(30).
+   14                           03 CLA-TAR    PIC 9.
+   15                           03 NOM-TAR    PIC X(20).
+   16                           03 ANUA       PIC 9(05)V99.
+   17                           03 FEC-ING    PIC 9(08).
+   18
+   19                       WORKING-STORAGE SECTION.
+   20                       77 WKS-FIN            PIC 9.
+   21                       77 WKS-DESC           PIC X.
+   22
+   23                       PROCEDURE DIVISION.
+   24    000002             INICIO.
+   25    000005                 PERFORM 1000-INICIO.
+   26    000008                 PERFORM 2000-PROCESO UNTIL WKS-FIN = 1.
+   27    000019                 PERFORM 3000-FIN.
+   28    000022                 STOP RUN.
+   29
+   30    000025             1000-INICIO.
+   31                   *    CREAR ARCHIVO.
+   32                   *    PRIMERA VEZ.
+   33                   *     OPEN OUTPUT CLIENTE2.
+   34                   *    SI YA EXISTE:
+   35    000028              OPEN EXTEND CLIENTE2.
+   36
+   37    000038             2000-PROCESO.
+   38    000041                 DISPLAY SPACES ERASE.
+   39    000049                 DISPLAY "ID CLIENTE:" LINE 10 POSITION 05.
+   40    000061                 ACCEPT ID-CLIENTE LINE 10 POSITION 33.
+   41    000073                 DISPLAY "NOMBRE DEL CLIENTE:" LINE 11 POSITION 05.
+   42    000085                 ACCEPT NOM-CLI LINE 11 POSITION 33.
+   43    000097                 DISPLAY "CLAVE DE LA TARJETA:" LINE 12 POSITION 05.
+   44
+   45
+   46    000109                 CALL "LINK-CAT" USING REG-CLI.
+   47
+   48
+   49    000119                 DISPLAY "FECHA DE INGRESO:(AAAAMMDD)" LINE 15 POSITION 05.
+   50    000132                 ACCEPT FEC-ING LINE 15 POSITION 33.
+   51
+   52    000144                 WRITE REG-CLI.
+   53
+   54    000151                 DISPLAY
+   55                            "DESEA CAPTURAR MAS REGISTROS?:(S/N)" LINE 17 POSITION 05.
+   56    000163                 ACCEPT WKS-DESC LINE 17 POSITION 43.
+   57    000175                 IF WKS-DESC = "N"
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/21/23  17:48:06 PAGE   2
+SOURCE FILE: PARC-SEC                   OPTIONS: L
+
+ LINE   DEBUG     PG/LN  A...B.......2.........3.........4.........5.........6.........7..ID.....8   PARC-SEC
+
+   58                               MOVE 1 TO WKS-FIN.
+   59
+   60
+   61    000191             3000-FIN.
+   62                   *    CERRAR ARCHIVO.
+   63    000194                 CLOSE CLIENTE2.
+
+
+
+CALLED PROGRAM SUMMARY
+
+PROGRAM-NAME REFERENCE         USING COUNT
+
+  "LINK-CAT"                         1
+RM/COBOL-85 (VER 2.01)  FOR DOS 2.00+          03/21/23  17:48:06 PAGE   3
+SOURCE FILE: PARC-SEC                   OPTIONS: L
+
+PROGRAM SUMMARY STATISTICS                                                                           PARC-SEC
+
+
+READ ONLY SIZE =                       742 (X"000002E6") BYTES
+
+READ/WRITE SIZE =                      300 (X"0000012C") BYTES
+
+OVERLAYABLE SEGMENT SIZE =               0 (X"00000000") BYTES
+
+TOTAL SIZE (LESS I/O BUFFERS) =       1042 (X"00000412") BYTES       63 LINES
+
+    0 ERRORS         0 WARNINGS     FOR PROGRAM PARC-SEC
+
+
+
+OBJECT VERSION LEVEL =   1
+

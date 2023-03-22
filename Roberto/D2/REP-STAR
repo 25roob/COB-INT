@@ -1,0 +1,45 @@
+                            REPORTE DE TARJETAS
+FECHA DE PROCESO: 15/03/23                                      PAG. : 01
+
+TIPO DE TARJETA:    CREDITO
+
+ID-CLIENTE  NOMBRE          CLAVE DE TARJETA   FEC DE INGRESO   ANUALIDAD
+  050       IVAN ESCOBEDO          CREDITO      20210209        $3,500.00
+  060       CARLOS SAENZ           CREDITO      20210830        $3,500.00
+  090       FERNANDO CASTA¥EDA     CREDITO      20211010        $3,500.00
+                                 TOTAL ANUALIDADES ANO 2021:   $10,500.00
+  070       MANUEL QUEZADA         CREDITO      20220424        $3,500.00
+                                 TOTAL ANUALIDADES ANO 2022:    $3,500.00
+  020       PEDRO SOLA             CREDITO      20230213           $30.00
+                                 TOTAL ANUALIDADES ANO 2023:       $30.00
+
+                    TOTAL ANUALIDAD CREDITO :     $14,030.00                            REPORTE DE TARJETAS
+FECHA DE PROCESO: 15/03/23                                      PAG. : 02
+
+TIPO DE TARJETA:    DEBITO
+
+ID-CLIENTE  NOMBRE          CLAVE DE TARJETA   FEC DE INGRESO   ANUALIDAD
+  010       JUAN PEREZ             DEBITO       20200101          $999.00
+  040       AMPARO BALTAZAR        DEBITO       20200715        $1,000.00
+  110       JESUS MARTINEZ         DEBITO       20201212        $1,000.00
+                                 TOTAL ANUALIDADES ANO 2020:    $2,999.00
+  080       GILBERTO JUAREZ        DEBITO       20220921        $1,000.00
+                                 TOTAL ANUALIDADES ANO 2022:    $1,000.00
+
+                    TOTAL ANUALIDAD DEBITO  :      $3,999.00                            REPORTE DE TARJETAS
+FECHA DE PROCESO: 15/03/23                                      PAG. : 03
+
+TIPO DE TARJETA:    NOMINA
+
+ID-CLIENTE  NOMBRE          CLAVE DE TARJETA   FEC DE INGRESO   ANUALIDAD
+  120       ROSALINA LOPEZ         NOMINA       20201230            $0.00
+                                 TOTAL ANUALIDADES ANO 2020:        $0.00
+  030       ROBERTO QUIJANO        NOMINA       20210712            $0.00
+                                 TOTAL ANUALIDADES ANO 2021:        $0.00
+  100       MARIA VICENTE          NOMINA       20221111            $0.00
+                                 TOTAL ANUALIDADES ANO 2022:        $0.00
+  060       MAYELA CRUZ            NOMINA       20230130            $0.00
+
+                    TOTAL ANUALIDAD NOMINA  :          $0.00
+
+                    TOTAL ANUALIDADES:       $18,029.00
