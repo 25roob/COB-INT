@@ -60,11 +60,12 @@
        01 WKS-ETIQ-IND    PIC X(24) VALUE "RFQV/S015/FILE/ARC-CAT.".
        01 WKS-ETIQ-R1     PIC X(24) VALUE "RFQV/S015/LIST/R-NOMPRO.".
        01 WKS-ETIQ-R2     PIC X(24) VALUE "RFQV/S015/LIST/R-CATPRO.".
-	   
-	   77 WKS-CONT-LIN    PIC 99.
-	   77 WKS-FINR1       PIC 9.
-	   77 WKS-I           PIC 99.
-	   
+       
+       77 WKS-CONT-LIN    PIC 99.
+       77 WKS-FINR1       PIC 9.
+       77 WKS-I           PIC 99.
+       77 WKS-IDR1CUT     PIC 99.
+       77 WKS-FEC-INCUT   PIC 9999.
        
        01 WKS-MESES.
            03 FILLER       PIC X(05) VALUE "ENE01".
@@ -218,12 +219,22 @@
            03 FILLER       PIC X(01) VALUE SPACES.
            03 WKS-ING-TOTD PIC ZZ,ZZZ,ZZ9.99.
            
+       01 WKS-TOTPAR.
+           03 FILLER         PIC X(32) VALUE SPACES.
+           03 FILLER         PIC X(22) VALUE
+                   "TOTAL ANUALIDADES AÑO ".
+           03 WKS-ANOT       PIC 9999.
+           03 FILLER         PIC X(03) VALUE ":  ".
+           03 WKS-PARTOT     PIC $$,$$$,$$9.99.
+           
        01 WKS-PIEA.
            03 FILLER       PIC X(12) VALUE "TOTAL PROY: ".
            03 WKS-PROY-CO  PIC 99.
            03 FILLER       PIC X(30) VALUE SPACES.
            03 FILLER       PIC X(16) VALUE "TOTAL IMPORTES: ".
            03 WKS-TOT-IMPO PIC $$,$$$,$$9.99.
+           
+           
            
        PROCEDURE DIVISION.
        INICIO.
@@ -244,57 +255,82 @@
        
        2200-REPORTE-NOMINA.
            SORT SOR-TEM
-		   ASCENDING ID-PROYECT FECHA-TERMINO
-		   USING ARC-PRO
-		   OUTPUT PROCEDURE 2210-GENERA-REPORTE.
-		   
-	   2210-GENERA-REPORTE.
-	   
-	       PERFORM 2220-INICIO.
-		   PERFORM 2250-PROCESO UNTIL WKS-FINR1 = 1.
-		   PERFORM 2270-FIN.
+           ASCENDING ID-PROYECT FECHA-TERMINO
+           USING ARC-PRO
+           OUTPUT PROCEDURE 2210-GENERA-REPORTE.
+           
+       2210-GENERA-REPORTE.
        
-	   2220-INICIO.
-	   
-	       RETURN SOR-TEM
-		   AT END MOVE 1 TO WKS-FINR1.
-		   
-	   2222-GENERA-ENCABEZADO.
-	       ADD 1 TO WKS-NUM-PAG.
-		   MOVE SPACES TO LINEAN.
-		   MOVE WKS-ENC1 TO LINEAN.
-		   WRITE LINEAN AFTER PAGE.
-		   
-		   ACCEPT WKS-HOY FROM DATE.
-		   MOVE CORR WKS-HOY TO WKS-ENC2.
-		   MOVE WKS-ENC2 TO LINEAN.
-		   WRITE LINEAN AFTER 2.
-		   
-		   SET WKS-I TO 1
-		   SEARCH T-PROYECTO VARYING WKS-I
-		   AT END DISPLAY "NO EXISTE PROYECTO"
-		   WHEN T-IDP (WKS-I) = SID-PROYECTO
-		   MOVE T-NOP (WKS-I) TO WKS-NOM-PROE.
-		   MOVE WKS-ENC3 TO LINEAN.
-		   WRITE LINEAN AFTER 2.
-		   
-		   MOVE WKS-ENC4 TO LINEAN.
-		   WRITE LINEAN AFTER 2.
-		   
-		   MOVE 7 TO WKS-CONT-LIN.
-	   
-	   2250-PROCESO.
-	       MOVE SNOMBRE-CONSULTOR TO WKS-NOM-CONS.
+           PERFORM 2220-INICIO.
+           PERFORM 2250-PROCESO UNTIL WKS-FINR1 = 1.
+           PERFORM 2270-FIN.
+       
+       2220-INICIO.
+       
+           RETURN SOR-TEM
+           AT END MOVE 1 TO WKS-FINR1.
+           
+       2222-GENERA-ENCABEZADO.
+           ADD 1 TO WKS-NUM-PAG.
+           MOVE SPACES TO LINEAN.
+           MOVE WKS-ENC1 TO LINEAN.
+           WRITE LINEAN AFTER PAGE.
+           
+           ACCEPT WKS-HOY FROM DATE.
+           MOVE CORR WKS-HOY TO WKS-ENC2.
+           MOVE WKS-ENC2 TO LINEAN.
+           WRITE LINEAN AFTER 2.
+           
+           SET WKS-I TO 1
+           SEARCH T-PROYECTO VARYING WKS-I
+           AT END DISPLAY "NO EXISTE PROYECTO"
+           WHEN T-IDP (WKS-I) = SID-PROYECTO
+           MOVE T-NOP (WKS-I) TO WKS-NOM-PROE.
+           MOVE WKS-ENC3 TO LINEAN.
+           WRITE LINEAN AFTER 2.
+           
+           MOVE WKS-ENC4 TO LINEAN.
+           WRITE LINEAN AFTER 2.
+           
+           MOVE 7 TO WKS-CONT-LIN.
+       
+       2250-PROCESO.
+           MOVE SNOMBRE-CONSULTOR TO WKS-NOM-CONS.
 
-		   MOVE FECHA-INICIO TO WKS-FEC-SPLIT.
+           MOVE FECHA-INICIO TO WKS-FEC-SPLIT.
            PERFORM 2252-FORMATEAR-FECHA.
+           MOVE WKS-FORM-FEC TO WKS-FEC-INID.
 
            MOVE FECHA-TERMINO TO WKS-FEC-SPLIT.
            PERFORM 2252-FORMATEAR-FECHA.
+           MOVE WKS-FORM-FEC TO WKS-FEC-TERD.
 
            MOVE INGRESO-MENSUAL TO WKS-ING-MEND.
-      *----------TODO: AÑADIR LINK AL ------------
-
+      
+      
+           IF WKS-SPANO = WKS-FEC-INCUT
+               NEXT SENTENCE
+           ELSE
+               MOVE WKS-FEC-INCUT TO WKS-ANOT
+               MOVE WKS-FEC-INCUT TO WKS-FEC-INCUT
+               PERFORM 2257-ESCRIBE-CORTE-FECHA.
+           
+           IF SID-PROYECTO = WKS-IDR1CUT
+               NEXT SENTENCE
+           ELSE
+               PERFORM 2222-GENERA-ENCABEZADO
+               MOVE 0 TO WKS-SUM-TNP
+               PERFORM 2222-GENERA-ENCABEZADO
+               MOVE SID-PROYECTO TO WKS-IDR1CUT.
+               
+      *----------TODO: AÑADIR CALL AL CAL-ING------------
+           MOVE 10000 TO WKS-ING-TOTD.
+           
+           ADD 10000 TO WKS-SUM-TNP.
+      *--------------------------------------------------
+           
+           RETURN SOR-TEM
+           AT END MOVE 1 TO WKS-FINR1.
 
        2252-FORMATEAR-FECHA.
            MOVE WKS-SPDIA TO WKS-DAY.
@@ -304,12 +340,30 @@
            WHEN T-IDM (WKS-I) = WKS-SPMES
            MOVE T-MES (WKS-I) TO WKS-MONTH.
            MOVE WKS-SPANO TO WKS-YEAR.
-           MOVE WKS-FORM-FEC TO WKS-FEC-INID.
-	   
+           
+       2255-GENERA-PIE.
+           IF WKS-NUM-PAG = 0
+               NEXT SENTENCE
+           ELSE
+               SET WKS-I TO 1
+               SEARCH T-PROYECTO VARYING WKS-I
+               AT END DISPLAY "NO EXISTE PROYECTO"
+               WHEN T-IDP (WKS-I) = SID-PROYECTO
+               MOVE T-NOP (WKS-I) TO WKS-NOM-PROP.
+       
+       2257-ESCRIBE-CORTE-FECHA.
+           IF WKS-NUM-PAG = 0
+               NEXT SENTENCE
+           ELSE
+               MOVE WKS-SUM-TNP TO WKS-PARTOT
+               MOVE WKS-TOTPAR TO LINEAN
+               WRITE LINEAN AFTER 1
+               MOVE ZEROES TO WKS-SUM-TNP.
+       
        2270-FIN.
-	   
-	   
-	   2600-REPORTE-CATALOGO.
+       
+       
+       2600-REPORTE-CATALOGO.
        
        
        3000-FIN.
