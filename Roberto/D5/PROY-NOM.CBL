@@ -106,6 +106,18 @@
            03 WKS-ANO     PIC 99.
            03 WKS-MES     PIC 99.
            03 WKS-DIA     PIC 99.
+
+       01 WKS-FORM-FEC.
+           03 WKS-DAY     PIC 99.
+           03 FILLER      PIC X VALUE "/".
+           03 WKS-MONTH   PIC XXX.
+           03 FILLER      PIC X VALUE "/".
+           03 WKS-YEAR    PIC 99. 
+
+       01 WKS-FEC-SPLIT.
+           03 WKS-SPANO   PIC 9999.
+           03 WKS-SPMES   PIC 99.
+           03 WKS-SPDIA   PIC 99.
        
       *===========VARIABLES DE REPORTE 1===========
        01 WKS-ENC1.
@@ -221,7 +233,7 @@
            
        1000-INICIO.
            OPEN INPUT ARC-PRO.
-           OPEN INPUT ARC-CAT.
+           OPEN I-O ARC-CAT.
            OPEN OUTPUT R-NOMPRO.
            OPEN OUTPUT R-CATPRO.
        
@@ -260,7 +272,7 @@
 		   
 		   SET WKS-I TO 1
 		   SEARCH T-PROYECTO VARYING WKS-I
-		   AT END DISPLAY "NO EXISTE"
+		   AT END DISPLAY "NO EXISTE PROYECTO"
 		   WHEN T-IDP (WKS-I) = SID-PROYECTO
 		   MOVE T-NOP (WKS-I) TO WKS-NOM-PROE.
 		   MOVE WKS-ENC3 TO LINEAN.
@@ -273,7 +285,26 @@
 	   
 	   2250-PROCESO.
 	       MOVE SNOMBRE-CONSULTOR TO WKS-NOM-CONS.
-		   
+
+		   MOVE FECHA-INICIO TO WKS-FEC-SPLIT.
+           PERFORM 2252-FORMATEAR-FECHA.
+
+           MOVE FECHA-TERMINO TO WKS-FEC-SPLIT.
+           PERFORM 2252-FORMATEAR-FECHA.
+
+           MOVE INGRESO-MENSUAL TO WKS-ING-MEND.
+      *----------TODO: AÑADIR LINK AL ------------
+
+
+       2252-FORMATEAR-FECHA.
+           MOVE WKS-SPDIA TO WKS-DAY.
+           SET WKS-I TO 1 
+           SEARCH T-MESE VARYING WKS-I
+           AT END DISPLAY "NO EXISTE MES"
+           WHEN T-IDM (WKS-I) = WKS-SPMES
+           MOVE T-MES (WKS-I) TO WKS-MONTH.
+           MOVE WKS-SPANO TO WKS-YEAR.
+           MOVE WKS-FORM-FEC TO WKS-FEC-INID.
 	   
        2270-FIN.
 	   
