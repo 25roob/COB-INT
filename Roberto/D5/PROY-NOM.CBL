@@ -377,7 +377,7 @@
                PERFORM 2259-ACTUALIZA-ARC-CAT
                MOVE 0              TO WKS-SUM-TNP.
                
-      *----------TODO: AÑADIR CALL AL CAL-ING------------
+      *----------TODO: TESTEAR EL CAL-ING------------
            MOVE SFECHA-INICIO      TO WKS-FEC-INICIO.
            MOVE SFECHA-TERMINO     TO WKS-FEC-TERMIN.
            MOVE SINGRESO-MENSUAL   TO WKS-ING-MENSUA.
