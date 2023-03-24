@@ -132,14 +132,16 @@
            03 FILLER      PIC X VALUE "/".
            03 WKS-YEAR    PIC 99. 
            
-       
-
        01 WKS-FEC-SPLIT.
            03 WKS-SPANO   PIC 9999.
            03 WKS-SPMES   PIC 99.
            03 WKS-SPDIA   PIC 99.
            
-        
+        01 WKS-LINK-DATA.
+           03 WKS-FEC-INICIO   PIC 9(08).
+           03 WKS-FEC-TERMIN   PIC 9(08).
+           03 WKS-ING-MENSUA   PIC 9(08)V99.
+           03 WKS-ING-TOTALD   PIC 9(10)V99.
        
       *===========VARIABLES DE REPORTE 1===========
        01 WKS-ENC1.
@@ -268,6 +270,7 @@
            OPEN I-O ARC-CAT.
            OPEN OUTPUT R-NOMPRO.
            OPEN OUTPUT R-CATPRO.
+           DISPLAY SPACES ERASE.
        
        2000-PROCESO.
            PERFORM 2200-REPORTE-NOMINA.
@@ -346,15 +349,15 @@
        2250-PROCESO.
            MOVE SNOMBRE-CONSULTOR TO WKS-NOM-CONS.
 
-           MOVE FECHA-INICIO TO WKS-FEC-SPLIT.
+           MOVE SFECHA-INICIO TO WKS-FEC-SPLIT.
            PERFORM 2252-FORMATEAR-FECHA.
            MOVE WKS-FORM-FEC TO WKS-FEC-INID.
 
-           MOVE FECHA-TERMINO TO WKS-FEC-SPLIT.
+           MOVE SFECHA-TERMINO TO WKS-FEC-SPLIT.
            PERFORM 2252-FORMATEAR-FECHA.
            MOVE WKS-FORM-FEC TO WKS-FEC-TERD.
 
-           MOVE INGRESO-MENSUAL TO WKS-ING-MEND.
+           MOVE SINGRESO-MENSUAL TO WKS-ING-MEND.
       
       
            IF WKS-SPANO = WKS-FEC-INCUT
@@ -375,6 +378,12 @@
                MOVE 0 TO WKS-SUM-TNP.
                
       *----------TODO: AÑADIR CALL AL CAL-ING------------
+           MOVE SFECHA-INICIO TO WKS-FEC-INICIO.
+           MOVE SFECHA-TERMINO TO WKS-FEC-TERMIN.
+           MOVE SINGRESO-MENSUAL TO WKS-ING-MENSUA.
+
+      *    CALL "CAL-ING" USING WKS-LINK-DATA.
+
            MOVE 10000 TO WKS-TEM-INGRETO.
            
            MOVE WKS-TEM-INGRETO TO WKS-ING-TOTD.

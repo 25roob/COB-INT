@@ -82,6 +82,30 @@
                MULTIPLY WKS-D-JU BY WKS-PAGO-FACT 
                    GIVING WKS-ING-TOTALD.
 
+       120-DIAS-TRANSC-MA.
+           PERFORM 150-CALCULO-DIAS VARYING WKS-I
+               FROM 1 BY 1 UNTIL WKS-I > 12.
+
+           SUBTRACT WKS-D-INI FROM WKS-D-JU.
+
+       150-CALCULO-DIAS.
+           ADD T-DIA (WKS-I) TO WKS-TEM-D.
+
+           IF T-MES (WKS-I) = WKS-MES
+               MOVE WKS-TEM-D TO WKS-D-JU
+               SUBTRACT T-DIA (WKS-I) FROM WKS-D-JU
+               ADD WKS-DIA TO WKS-D-JU
+               ADD 1 TO WKS-FIN1.
+           
+           IF T-MES (WKS-I) = WKS-MESI
+               MOVE WKS-TEM-D TO WKS-D-INI
+               SUBTRACT T-DIA (WKS-I) FROM WKS-D-INI
+               ADD WKS-DIAI TO WKS-D-INI
+               ADD 1 TO WKS-FIN1.
+
+           IF WKS-FIN1 = 2
+               MOVE 15 TO WKS-I.
+
        170-DIAS-TRANSC-DA.
            SUBTRACT WKS-ANOI FROM WKS-ANOT.
            PERFORM 190-DELTA-DIAS VARYING WKS-I
@@ -106,28 +130,3 @@
 
            IF WKS-FIN1 = 2
                MOVE 15 TO WKS-I.
-
-       120-DIAS-TRANSC-MA.
-           PERFORM 150-CALCULO-DIAS VARYING WKS-I
-               FROM 1 BY 1 UNTIL WKS-I > 12.
-
-           SUBTRACT WKS-D-INI FROM WKS-D-JU.
-
-       150-CALCULO-DIAS.
-           ADD T-DIA (WKS-I) TO WKS-TEM-D.
-
-           IF T-MES (WKS-I) = WKS-MES
-               MOVE WKS-TEM-D TO WKS-D-JU
-               SUBTRACT T-DIA (WKS-I) FROM WKS-D-JU
-               ADD WKS-DIA TO WKS-D-JU
-               ADD 1 TO WKS-FIN1.
-           
-           IF T-MES (WKS-I) = WKS-MESI
-               MOVE WKS-TEM-D TO WKS-D-INI
-               SUBTRACT T-DIA (WKS-I) FROM WKS-D-INI
-               ADD WKS-DIAI TO WKS-D-INI
-               ADD 1 TO WKS-FIN1.
-
-           IF WKS-FIN1 = 2
-               MOVE 15 TO WKS-I.
-           
