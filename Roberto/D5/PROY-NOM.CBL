@@ -67,6 +67,10 @@
        
        01 WKS-SUM-TNP     PIC 9(08)V99.
        01 WKS-IMP-FINAL   PIC 9(10)V99.
+
+       01 WKS-INPUTFEC
+           03 FILLER      PIC 99.
+           03 WKS-INFEC   PIC 9(06).
        
        77 WKS-CONT-LIN    PIC 99.
        77 WKS-FINR1       PIC 9.
@@ -75,6 +79,8 @@
        77 WKS-FEC-INCUT   PIC 9999.
        77 WKS-TEM-NOMPRO  PIC X(16).
        77 WKS-ESPERA      PIC X.
+       77 WKS-FINR2       PIC 9.
+       77 WKS-FINO1       PIC 9.
        
        77 WKS-TEM-INGRETO PIC 9(08)V99.
        
@@ -93,7 +99,7 @@
            03 FILLER       PIC X(05) VALUE "DIC12".
            
        01 T-MESES REDEFINES WKS-MESES.
-           03 T-MESE OCCURS 12 TIMES.
+           03 T-MESE OCCURS 12 TIMES INDEXED BY WKS-I.
                05 T-MES    PIC XXX.
                05 T-IDM    PIC 99.  
 
@@ -271,9 +277,32 @@
        2200-REPORTE-NOMINA.
            SORT SOR-TEM
            ASCENDING SID-PROYECTO SFECHA-INICIO
-           USING ARC-PRO
+           INPUT PROCEDURE 2201-ORDENA-ARCHIVO.
            OUTPUT PROCEDURE 2210-GENERA-REPORTE.
+
+       2201-ORDENA-ARCHIVO.
+           PERFORM 2202-INICIO.
+           PERFORM 2205-PROCESO UNTIL WKS-FINO1 = 1.
+           PERFORM 2207-FIN.
            
+       2202-INICIO.
+           READ ARC-PRO
+           AT END MOVE 1 TO WKS-FINO1.
+           
+           ACCEPT WKS-HOY FROM DATE.
+
+       2205-PROCESO.
+           MOVE FECHA-TERMINO TO WKS-INPUTFEC.
+           IF STATUS-PROY = 01 AND WKS-INFEC > WKS-HOY
+               MOVE REG-PRO TO SREG-PRO
+               RELEASE SREG-PRO.
+
+           READ ARC-PRO
+           AT END MOVE 1 TO WKS-FINO1.
+       
+       2207-FIN.
+           DISPLAY "FIN DEL INGRESO AL SORT"
+
        2210-GENERA-REPORTE.
        
            PERFORM 2220-INICIO.
