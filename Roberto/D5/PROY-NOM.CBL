@@ -266,10 +266,10 @@
            STOP RUN.
            
        1000-INICIO.
-           OPEN INPUT ARC-PRO.
-           OPEN I-O ARC-CAT.
-           OPEN OUTPUT R-NOMPRO.
-           OPEN OUTPUT R-CATPRO.
+           OPEN INPUT   ARC-PRO.
+           OPEN I-O     ARC-CAT.
+           OPEN OUTPUT  R-NOMPRO.
+           OPEN OUTPUT  R-CATPRO.
            DISPLAY SPACES ERASE.
        
        2000-PROCESO.
@@ -280,7 +280,7 @@
        2200-REPORTE-NOMINA.
            SORT SOR-TEM
            ASCENDING SID-PROYECTO SFECHA-INICIO
-           INPUT PROCEDURE 2201-ORDENA-ARCHIVO.
+           INPUT PROCEDURE 2201-ORDENA-ARCHIVO
            OUTPUT PROCEDURE 2210-GENERA-REPORTE.
 
        2201-ORDENA-ARCHIVO.
@@ -290,21 +290,21 @@
            
        2202-INICIO.
            READ ARC-PRO
-           AT END MOVE 1 TO WKS-FINO1.
+           AT END MOVE 1            TO WKS-FINO1.
            
            ACCEPT WKS-HOY FROM DATE.
 
        2205-PROCESO.
-           MOVE FECHA-TERMINO TO WKS-INPUTFEC.
-           IF STATUS-PROY = 01 AND WKS-INFEC > WKS-HOY
-               MOVE REG-PRO TO SREG-PRO
+           MOVE FECHA-TERMINO       TO WKS-INPUTFEC.
+           IF STATUS-PROY = 01 AND WKS-INFEC >= WKS-HOY
+               MOVE REG-PRO         TO SREG-PRO
                RELEASE SREG-PRO.
 
            READ ARC-PRO
-           AT END MOVE 1 TO WKS-FINO1.
+           AT END MOVE 1            TO WKS-FINO1.
        
        2207-FIN.
-           DISPLAY "FIN DEL INGRESO AL SORT"
+           DISPLAY "FIN DEL INGRESO AL SORT".
 
        2210-GENERA-REPORTE.
        
@@ -315,56 +315,56 @@
        2220-INICIO.
        
            RETURN SOR-TEM
-           AT END MOVE 1 TO WKS-FINR1.
+           AT END MOVE 1            TO WKS-FINR1.
            
        2222-GENERA-ENCABEZADO.
-           ADD 1 TO WKS-NUM-PAG.
-           MOVE SPACES TO LINEAN.
-           MOVE WKS-ENC1 TO LINEAN.
+           ADD 1                    TO WKS-NUM-PAG.
+           MOVE SPACES              TO LINEAN.
+           MOVE WKS-ENC1            TO LINEAN.
            WRITE LINEAN AFTER PAGE.
            
            ACCEPT WKS-HOY FROM DATE.
-           MOVE CORR WKS-HOY TO WKS-ENC2.
-           MOVE WKS-ENC2 TO LINEAN.
+           MOVE CORR WKS-HOY        TO WKS-ENC2.
+           MOVE WKS-ENC2            TO LINEAN.
            WRITE LINEAN AFTER 2.
            
            PERFORM 2225-ID-ACT-A-NOM-PRO.
-           MOVE WKS-TEM-NOMPRO TO WKS-NOM-PROE.
-           MOVE WKS-ENC3 TO LINEAN.
+           MOVE WKS-TEM-NOMPRO      TO WKS-NOM-PROE.
+           MOVE WKS-ENC3            TO LINEAN.
            WRITE LINEAN AFTER 2.
            
            MOVE WKS-ENC4 TO LINEAN.
            WRITE LINEAN AFTER 2.
            
-           MOVE 7 TO WKS-CONT-LIN.
+           MOVE 7                   TO WKS-CONT-LIN.
            
        2225-ID-ACT-A-NOM-PRO.
            SET WKS-I TO 1
            SEARCH T-PROYECTO VARYING WKS-I
            AT END DISPLAY "NO EXISTE PROYECTO"
            WHEN T-IDP (WKS-I) = SID-PROYECTO
-           MOVE T-NOP (WKS-I) TO WKS-TEM-NOMPRO.
+           MOVE T-NOP (WKS-I)      TO WKS-TEM-NOMPRO.
            
        
        2250-PROCESO.
-           MOVE SNOMBRE-CONSULTOR TO WKS-NOM-CONS.
+           MOVE SNOMBRE-CONSULTOR  TO WKS-NOM-CONS.
 
-           MOVE SFECHA-INICIO TO WKS-FEC-SPLIT.
+           MOVE SFECHA-INICIO      TO WKS-FEC-SPLIT.
            PERFORM 2252-FORMATEAR-FECHA.
-           MOVE WKS-FORM-FEC TO WKS-FEC-INID.
+           MOVE WKS-FORM-FEC       TO WKS-FEC-INID.
 
-           MOVE SFECHA-TERMINO TO WKS-FEC-SPLIT.
+           MOVE SFECHA-TERMINO     TO WKS-FEC-SPLIT.
            PERFORM 2252-FORMATEAR-FECHA.
-           MOVE WKS-FORM-FEC TO WKS-FEC-TERD.
+           MOVE WKS-FORM-FEC       TO WKS-FEC-TERD.
 
-           MOVE SINGRESO-MENSUAL TO WKS-ING-MEND.
+           MOVE SINGRESO-MENSUAL   TO WKS-ING-MEND.
       
       
            IF WKS-SPANO = WKS-FEC-INCUT
                NEXT SENTENCE
            ELSE
-               MOVE WKS-FEC-INCUT TO WKS-ANOT
-               MOVE WKS-FEC-INCUT TO WKS-FEC-INCUT
+               MOVE WKS-FEC-INCUT  TO WKS-ANOT
+               MOVE WKS-FEC-INCUT  TO WKS-FEC-INCUT
                PERFORM 2257-ESCRIBE-CORTE-FECHA.
            
            IF SID-PROYECTO = WKS-IDR1CUT
@@ -373,35 +373,36 @@
                PERFORM 2255-GENERA-PIE
                
                PERFORM 2222-GENERA-ENCABEZADO
-               MOVE SID-PROYECTO TO WKS-IDR1CUT
+               MOVE SID-PROYECTO   TO WKS-IDR1CUT
                PERFORM 2259-ACTUALIZA-ARC-CAT
-               MOVE 0 TO WKS-SUM-TNP.
+               MOVE 0              TO WKS-SUM-TNP.
                
       *----------TODO: AÑADIR CALL AL CAL-ING------------
-           MOVE SFECHA-INICIO TO WKS-FEC-INICIO.
-           MOVE SFECHA-TERMINO TO WKS-FEC-TERMIN.
-           MOVE SINGRESO-MENSUAL TO WKS-ING-MENSUA.
+           MOVE SFECHA-INICIO      TO WKS-FEC-INICIO.
+           MOVE SFECHA-TERMINO     TO WKS-FEC-TERMIN.
+           MOVE SINGRESO-MENSUAL   TO WKS-ING-MENSUA.
 
       *    CALL "CAL-ING" USING WKS-LINK-DATA.
+      *    MOVE WKS-ING-TOTALD TO WKS-TEM-INGRETO.
 
-           MOVE 10000 TO WKS-TEM-INGRETO.
+           MOVE 10000              TO WKS-TEM-INGRETO.
            
-           MOVE WKS-TEM-INGRETO TO WKS-ING-TOTD.
+           MOVE WKS-TEM-INGRETO    TO WKS-ING-TOTD.
            
-           ADD WKS-TEM-INGRETO TO WKS-SUM-TNP.
+           ADD WKS-TEM-INGRETO     TO WKS-SUM-TNP.
       *--------------------------------------------------
            
            RETURN SOR-TEM
-           AT END MOVE 1 TO WKS-FINR1.
+           AT END MOVE 1           TO WKS-FINR1.
 
        2252-FORMATEAR-FECHA.
-           MOVE WKS-SPDIA TO WKS-DAY.
-           SET WKS-I TO 1 
+           MOVE WKS-SPDIA          TO WKS-DAY.
+           SET WKS-I               TO 1 
            SEARCH T-MESE VARYING WKS-I
            AT END DISPLAY "NO EXISTE MES"
            WHEN T-IDM (WKS-I) = WKS-SPMES
-           MOVE T-MES (WKS-I) TO WKS-MONTH.
-           MOVE WKS-SPANO TO WKS-YEAR.
+           MOVE T-MES (WKS-I)      TO WKS-MONTH.
+           MOVE WKS-SPANO          TO WKS-YEAR.
            
        2255-GENERA-PIE.
            IF WKS-NUM-PAG = 0
@@ -414,26 +415,27 @@
            IF WKS-NUM-PAG = 0
                NEXT SENTENCE
            ELSE
-               MOVE WKS-SUM-TNP TO WKS-PARTOT
-               MOVE WKS-TOTPAR TO LINEAN
+               MOVE WKS-SUM-TNP    TO WKS-PARTOT
+               MOVE WKS-TOTPAR     TO LINEAN
                WRITE LINEAN AFTER 1
-               MOVE ZEROES TO WKS-SUM-TNP.
+               MOVE ZEROES         TO WKS-SUM-TNP.
        
        2259-ACTUALIZA-ARC-CAT.
-           MOVE SID-PROYECTO TO ID-PROYECTO.
+           MOVE SID-PROYECTO       TO ID-PROYECTO.
            PERFORM 2225-ID-ACT-A-NOM-PRO.
            READ ARC-CAT
                INVALID KEY
                MOVE WKS-TEM-NOMPRO TO NOMBRE-PROY
-               MOVE WKS-SUM-TNP TO IMP-TOTAL
+               MOVE WKS-SUM-TNP    TO IMP-TOTAL
                WRITE REG-CAT.
            
-           MOVE WKS-TEM-NOMPRO TO NOMBRE-PROY.
-           MOVE WKS-SUM-TNP TO IMP-TOTAL.
+           MOVE WKS-TEM-NOMPRO     TO NOMBRE-PROY.
+           MOVE WKS-SUM-TNP        TO IMP-TOTAL.
            REWRITE REG-CAT.
                
        2270-FIN.
            PERFORM 2255-GENERA-PIE.
+           DISPLAY "TERMINO EL PROCESO DE REPORTE 1".
 
       *----------------SEGUNDO-REPOTE---------------*
 
@@ -454,9 +456,9 @@
            PERFORM 2622-GENERA-ENCABEZADO.
            
        2622-GENERA-ENCABEZADO.
-           ADD 1 TO WKS-NUM-PAGA.
-           MOVE SPACES TO LINEAC.
-           MOVE WKS-ENC1 TO LINEAC.
+           ADD 1              TO WKS-NUM-PAGA.
+           MOVE SPACES        TO LINEAC.
+           MOVE WKS-ENC1      TO LINEAC.
            WRITE LINEAC AFTER PAGE.
            
            ACCEPT WKS-HOY FROM DATE.
@@ -465,47 +467,51 @@
            AT END DISPLAY "NO EXISTE MES"
            WHEN T-IDM (WKS-I) = WKS-MES
            MOVE T-MES (WKS-I) TO WKS-MESEB.
-           MOVE CORR WKS-HOY TO WKS-ENCB.
-           MOVE WKS-ENCB TO LINEAC.
+           MOVE CORR WKS-HOY  TO WKS-ENCB.
+           MOVE WKS-ENCB      TO LINEAC.
            WRITE LINEAC AFTER 2.
            
-           
-           MOVE WKS-ENCC TO LINEAC.
+           MOVE WKS-ENCC      TO LINEAC.
            WRITE LINEAC AFTER 2.
            
-           MOVE 5 TO WKS-CONT-LIN.
-       
+           MOVE 5             TO WKS-CONT-LIN.
        
        2650-PROCESO.
            
-           MOVE ID-PROYECTO TO WKS-ID-PROD.
-           MOVE NOMBRE-PROY TO WKS-NOM-PROD.
-           MOVE IMP-TOTAL   TO WKS-ING-TOTD.
+           MOVE ID-PROYECTO   TO WKS-ID-PROD.
+           MOVE NOMBRE-PROY   TO WKS-NOM-PROD.
+           MOVE IMP-TOTAL     TO WKS-ING-TOTD.
            
            IF WKS-CONT-LIN > 60
                PERFORM 2622-GENERA-ENCABEZADO.
            
-           MOVE WKS-DETA TO LINEAC
+           MOVE WKS-DETA      TO LINEAC
            WRITE LINEAC AFTER 1
-           ADD 1 TO WKS-PROY-CO.
+           ADD 1              TO WKS-PROY-CO.
            
-           ADD IMP-TOTAL TO WKS-IMP-FINAL.
+           ADD IMP-TOTAL      TO WKS-IMP-FINAL.
            
            READ ARC-CAT
            NEXT
-           AT END MOVE 1 TO WKS-FINR2.
+           AT END MOVE 1      TO WKS-FINR2.
        
        2680-FIN.
            MOVE WKS-IMP-FINAL TO WKS-TOT-IMPO.
-           MOVE WKS-PIEA TO LINEAC.
+           MOVE WKS-PIEA      TO LINEAC.
            WRITE LINEAC.
        
        3000-FIN.
               
-           CLOSE ARC-PRO  WITH SAVE.
-           CLOSE ARC-CAT  WITH SAVE.
-           CLOSE R-NOMPRO WITH SAVE.
-           CLOSE R-CATPRO WITH SAVE.
+      *    CLOSE ARC-PRO  WITH SAVE.
+      *    CLOSE ARC-CAT  WITH SAVE.
+      *    CLOSE R-NOMPRO WITH SAVE.
+      *    CLOSE R-CATPRO WITH SAVE.
+
+           CLOSE ARC-PRO.  
+           CLOSE ARC-CAT. 
+           CLOSE R-NOMPRO. 
+           CLOSE R-CATPRO. 
            
+           DISPLAY "TERMINO EL PROCESO DE REPORTE 2".
            DISPLAY "EL PROGRAMA TERMINO CON EXITO.".
            ACCEPT WKS-ESPERA.
