@@ -70,7 +70,7 @@
        
        77 WKS-CONT-LIN    PIC 99.
        77 WKS-FINR1       PIC 9.
-       77 WKS-I           PIC 99.
+      * 77 WKS-I           PIC 99.
        77 WKS-IDR1CUT     PIC 99.
        77 WKS-FEC-INCUT   PIC 9999.
        77 WKS-TEM-NOMPRO  PIC X(16).
@@ -110,7 +110,7 @@
            03 FILLER      PIC X(18) VALUE "13REMATE          ".
            
        01 T-PROYECTOS REDEFINES WKS-PROYECTOS.
-           03 T-PROYECTO OCCURS 10 TIMES.
+           03 T-PROYECTO OCCURS 10 TIMES INDEXED BY WKS-I.
                05 T-IDP   PIC 99.
                05 T-NOP   PIC X(16).  
        
@@ -296,7 +296,7 @@
            MOVE WKS-ENC2 TO LINEAN.
            WRITE LINEAN AFTER 2.
            
-           PERFORM 2225-ID-ACTUAL-A-NOMBRE-PROYECTO.
+           PERFORM 2225-ID-ACT-A-NOM-PRO.
            MOVE WKS-TEM-NOMPRO TO WKS-NOM-PROE.
            MOVE WKS-ENC3 TO LINEAN.
            WRITE LINEAN AFTER 2.
@@ -306,7 +306,7 @@
            
            MOVE 7 TO WKS-CONT-LIN.
            
-       2225-ID-ACTUAL-A-NOMBRE-PROYECTO.
+       2225-ID-ACT-A-NOM-PRO.
            SET WKS-I TO 1
            SEARCH T-PROYECTO VARYING WKS-I
            AT END DISPLAY "NO EXISTE PROYECTO"
@@ -369,7 +369,7 @@
            IF WKS-NUM-PAG = 0
                NEXT SENTENCE
            ELSE
-               PERFORM 2225-ID-ACTUAL-A-NOMBRE-PROYECTO
+               PERFORM 2225-ID-ACT-A-NOM-PRO
                MOVE WKS-TEM-NOMPRO TO WKS-NOM-PROP.
        
        2257-ESCRIBE-CORTE-FECHA.
@@ -383,7 +383,7 @@
        
        2259-ACTUALIZA-ARC-CAT.
            MOVE SID-PROYECTO TO ID-PROYECTO.
-           PERFORM 2225-ID-ACTUAL-A-NOMBRE-PROYECTO.
+           PERFORM 2225-ID-ACT-A-NOM-PRO.
            READ ARC-CAT
                INVALID KEY
                MOVE WKS-TEM-NOMPRO TO NOMBRE-PROY
