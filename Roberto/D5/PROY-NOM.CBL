@@ -1,5 +1,5 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. PRO-FIN2.
+       PROGRAM-ID. PROY-NOM.
        AUTHOR.     ROBERTO Q.
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
@@ -15,7 +15,8 @@
            SELECT R-CATPRO ASSIGN TO PRINTER.
        DATA DIVISION.
        FILE SECTION.
-       FD ARC-PRO VALUE OF TITLE WKS-ETIQ-SEC.
+      * FD ARC-PRO VALUE OF TITLE WKS-ETIQ-SEC.
+       FD ARC-PRO.
        01 REG-PRO.
            03 ID-PROYECT        PIC 9(02).
            03 STATUS-PROY       PIC 9(02).
@@ -25,7 +26,7 @@
            03 FECHA-TERMINO     PIC 9(08).
            
        SD SOR-TEM.
-       01 REG-PRO.
+       01 SREG-PRO.
            03 SID-PROYECTO      PIC 9(02).
            03 SSTATUS-PROY      PIC 9(02).
            03 SNOMBRE-CONSULTOR PIC X(30).
@@ -33,24 +34,27 @@
            03 SFECHA-INICIO     PIC 9(08).
            03 SFECHA-TERMINO    PIC 9(08).
       
-      FD ARC-CAT VALUE OF TITLE WKS-ETIQ-IND.
-      01 REG-CAT.
+      * FD ARC-CAT VALUE OF TITLE WKS-ETIQ-IND.
+       FD ARC-CAT.
+       01 REG-CAT.
            03 ID-PROYECTO       PIC 9(02).
            03 NOMBRE-PROY       PIC X(17).
            03 IMP-TOTAL         PIC 9(10)V99.
       
-       FD R-NOMPRO VALUE OF TITLE WKS-ETIQ-R1
-           VALUE PROTECTION IS      PROTECTED
-           VALUE SECURITYTYPE IS    PUBLIC
-           RECORD CONTAINS          132 CHARACTERS
-           BLOCK CONTAINS           1 RECORDS.
+      * FD R-NOMPRO VALUE OF TITLE WKS-ETIQ-R1
+      *     VALUE PROTECTION IS      PROTECTED
+      *     VALUE SECURITYTYPE IS    PUBLIC
+      *     RECORD CONTAINS          132 CHARACTERS
+      *     BLOCK CONTAINS           1 RECORDS.
+       FD R-NOMPRO.
        01 LINEAN           PIC X(132).
       
-       FD R-CATPRO VALUE OF TITLE WKS-ETIQ-R2
-       VALUE PROTECTION IS          PROTECTED
-           VALUE SECURITYTYPE IS    PUBLIC
-           RECORD CONTAINS          132 CHARACTERS
-           BLOCK CONTAINS           1 RECORDS.
+      * FD R-CATPRO VALUE OF TITLE WKS-ETIQ-R2
+      * VALUE PROTECTION IS          PROTECTED
+      *     VALUE SECURITYTYPE IS    PUBLIC
+      *     RECORD CONTAINS          132 CHARACTERS
+      *     BLOCK CONTAINS           1 RECORDS.
+       FD R-CATPRO.
        01 LINEAC           PIC X(132).
       
       
@@ -232,7 +236,7 @@
            
        01 WKS-TOTPAR.
            03 FILLER       PIC X(32) VALUE SPACES.
-           03 FILLER       PIC X(22) VALUE "TOTAL ANUALIDADES AÑO ".
+           03 FILLER       PIC X(22) VALUE "TOTAL ANUALIDADES ANO ".
            03 WKS-ANOT     PIC 9999.
            03 FILLER       PIC X(03) VALUE ":  ".
            03 WKS-PARTOT   PIC $$,$$$,$$9.99.
@@ -251,6 +255,7 @@
            PERFORM 1000-INICIO.
            PERFORM 2000-PROCESO.
            PERFORM 3000-FIN.
+           STOP RUN.
            
        1000-INICIO.
            OPEN INPUT ARC-PRO.
@@ -265,7 +270,7 @@
        
        2200-REPORTE-NOMINA.
            SORT SOR-TEM
-           ASCENDING ID-PROYECT FECHA-TERMINO
+           ASCENDING SID-PROYECTO SFECHA-INICIO
            USING ARC-PRO
            OUTPUT PROCEDURE 2210-GENERA-REPORTE.
            
