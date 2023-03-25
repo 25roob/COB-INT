@@ -66,9 +66,11 @@
        01 WKS-ETIQ-R2     PIC X(24) VALUE "RFQV/S015/LIST/R-CATPRO.".
        
        01 WKS-SUM-TNP     PIC 9(08)V99.
+       01 WKS-SUM-CUFE    PIC 9(08)V99.
        01 WKS-IMP-FINAL   PIC 9(10)V99.
+       01 WKS-CHECK-FEC   PIC 9999.
 
-       01 WKS-INPUTFEC
+       01 WKS-INPUTFEC.
            03 FILLER      PIC 99.
            03 WKS-INFEC   PIC 9(06).
        
@@ -116,7 +118,7 @@
            03 FILLER      PIC X(18) VALUE "13REMATE          ".
            
        01 T-PROYECTOS REDEFINES WKS-PROYECTOS.
-           03 T-PROYECTO OCCURS 10 TIMES INDEXED BY WKS-I.
+           03 T-PROYECTO OCCURS 10 TIMES INDEXED BY WKS-J.
                05 T-IDP   PIC 99.
                05 T-NOP   PIC X(16).  
        
@@ -124,6 +126,11 @@
            03 WKS-ANO     PIC 99.
            03 WKS-MES     PIC 99.
            03 WKS-DIA     PIC 99.
+           
+       01 WKS-HOY-TBM.
+           03 WKS-ANOTBM  PIC 99.
+           03 WKS-MESTBM  PIC 99.
+           03 WKS-DIATBM  PIC 99.
 
        01 WKS-FORM-FEC.
            03 WKS-DAY     PIC 99.
@@ -188,7 +195,7 @@
            03 FILLER       PIC X(01) VALUE SPACES.
            03 WKS-ING-MEND PIC ZZ,ZZZ,ZZ9.99.
            03 FILLER       PIC X(01) VALUE SPACES.
-           03 WKS-ING-TOTD PIC ZZ,ZZZ,ZZ9.99.
+           03 WKS-ING-TOT1 PIC ZZ,ZZZ,ZZ9.99.
            
        01 WKS-PIE1.
            03 FILLER       PIC X(20) VALUE SPACES.
@@ -243,7 +250,7 @@
            03 WKS-ING-TOTD PIC ZZ,ZZZ,ZZ9.99.
            
        01 WKS-TOTPAR.
-           03 FILLER       PIC X(32) VALUE SPACES.
+           03 FILLER       PIC X(30) VALUE SPACES.
            03 FILLER       PIC X(22) VALUE "TOTAL ANUALIDADES ANO ".
            03 WKS-ANOT     PIC 9999.
            03 FILLER       PIC X(03) VALUE ":  ".
@@ -296,7 +303,8 @@
 
        2205-PROCESO.
            MOVE FECHA-TERMINO       TO WKS-INPUTFEC.
-           IF STATUS-PROY = 01 AND WKS-INFEC >= WKS-HOY
+           IF STATUS-PROY = 01
+      *     IF STATUS-PROY = 01 AND WKS-INFEC >= WKS-HOY
                MOVE REG-PRO         TO SREG-PRO
                RELEASE SREG-PRO.
 
@@ -339,11 +347,11 @@
            MOVE 7                   TO WKS-CONT-LIN.
            
        2225-ID-ACT-A-NOM-PRO.
-           SET WKS-I TO 1
-           SEARCH T-PROYECTO VARYING WKS-I
+           SET WKS-J TO 1
+           SEARCH T-PROYECTO VARYING WKS-J
            AT END DISPLAY "NO EXISTE PROYECTO"
-           WHEN T-IDP (WKS-I) = SID-PROYECTO
-           MOVE T-NOP (WKS-I)      TO WKS-TEM-NOMPRO.
+           WHEN T-IDP (WKS-J) = SID-PROYECTO
+           MOVE T-NOP (WKS-J)      TO WKS-TEM-NOMPRO.
            
        
        2250-PROCESO.
@@ -352,19 +360,39 @@
            MOVE SFECHA-INICIO      TO WKS-FEC-SPLIT.
            PERFORM 2252-FORMATEAR-FECHA.
            MOVE WKS-FORM-FEC       TO WKS-FEC-INID.
+           MOVE WKS-SPANO          TO WKS-CHECK-FEC.
 
            MOVE SFECHA-TERMINO     TO WKS-FEC-SPLIT.
            PERFORM 2252-FORMATEAR-FECHA.
            MOVE WKS-FORM-FEC       TO WKS-FEC-TERD.
 
            MOVE SINGRESO-MENSUAL   TO WKS-ING-MEND.
+           
+      *----------TODO: TESTEAR EL CAL-ING------------
+           MOVE SFECHA-INICIO      TO WKS-FEC-INICIO.
+           MOVE SFECHA-TERMINO     TO WKS-FEC-TERMIN.
+           MOVE SINGRESO-MENSUAL   TO WKS-ING-MENSUA.
+
+      *     CALL "CAL-ING" USING WKS-LINK-DATA.
+      *     MOVE WKS-ING-TOTALD TO WKS-TEM-INGRETO.
+
+           MOVE 10000              TO WKS-TEM-INGRETO.
+           
+           MOVE WKS-TEM-INGRETO    TO WKS-ING-TOT1.
+           
+           ADD WKS-TEM-INGRETO     TO WKS-SUM-TNP.
+           
+           ADD WKS-TEM-INGRETO     TO WKS-SUM-CUFE.
+      *--------------------------------------------------
+      
+           
       
       
-           IF WKS-SPANO = WKS-FEC-INCUT
+           IF WKS-CHECK-FEC = WKS-FEC-INCUT
                NEXT SENTENCE
            ELSE
                MOVE WKS-FEC-INCUT  TO WKS-ANOT
-               MOVE WKS-FEC-INCUT  TO WKS-FEC-INCUT
+               MOVE WKS-CHECK-FEC  TO WKS-FEC-INCUT
                PERFORM 2257-ESCRIBE-CORTE-FECHA.
            
            IF SID-PROYECTO = WKS-IDR1CUT
@@ -377,20 +405,8 @@
                PERFORM 2259-ACTUALIZA-ARC-CAT
                MOVE 0              TO WKS-SUM-TNP.
                
-      *----------TODO: TESTEAR EL CAL-ING------------
-           MOVE SFECHA-INICIO      TO WKS-FEC-INICIO.
-           MOVE SFECHA-TERMINO     TO WKS-FEC-TERMIN.
-           MOVE SINGRESO-MENSUAL   TO WKS-ING-MENSUA.
-
-      *    CALL "CAL-ING" USING WKS-LINK-DATA.
-      *    MOVE WKS-ING-TOTALD TO WKS-TEM-INGRETO.
-
-           MOVE 10000              TO WKS-TEM-INGRETO.
-           
-           MOVE WKS-TEM-INGRETO    TO WKS-ING-TOTD.
-           
-           ADD WKS-TEM-INGRETO     TO WKS-SUM-TNP.
-      *--------------------------------------------------
+           MOVE WKS-DET1 TO LINEAN.
+           WRITE LINEAN AFTER 1.
            
            RETURN SOR-TEM
            AT END MOVE 1           TO WKS-FINR1.
@@ -409,7 +425,10 @@
                NEXT SENTENCE
            ELSE
                PERFORM 2225-ID-ACT-A-NOM-PRO
-               MOVE WKS-TEM-NOMPRO TO WKS-NOM-PROP.
+               MOVE WKS-NOM-PROE TO WKS-NOM-PROP
+               MOVE WKS-SUM-TNP TO WKS-TOANU
+               MOVE WKS-PIE1 TO LINEAN
+               WRITE LINEAN AFTER 2.
        
        2257-ESCRIBE-CORTE-FECHA.
            IF WKS-NUM-PAG = 0
@@ -417,8 +436,8 @@
            ELSE
                MOVE WKS-SUM-TNP    TO WKS-PARTOT
                MOVE WKS-TOTPAR     TO LINEAN
-               WRITE LINEAN AFTER 1
-               MOVE ZEROES         TO WKS-SUM-TNP.
+               WRITE LINEAN AFTER 1.
+      *         MOVE ZEROES         TO WKS-SUM-CUFE.
        
        2259-ACTUALIZA-ARC-CAT.
            MOVE SID-PROYECTO       TO ID-PROYECTO.
@@ -441,7 +460,7 @@
 
        2600-REPORTE-CATALOGO.
            PERFORM 2620-INICIO.
-           PERFORM 2650-PROCESO UNTIL WKS-FINR2.
+           PERFORM 2650-PROCESO UNTIL WKS-FINR2 = 1.
            PERFORM 2680-FIN.
            
        2620-INICIO.
@@ -458,15 +477,17 @@
        2622-GENERA-ENCABEZADO.
            ADD 1              TO WKS-NUM-PAGA.
            MOVE SPACES        TO LINEAC.
-           MOVE WKS-ENC1      TO LINEAC.
+           MOVE WKS-ENCA      TO LINEAC.
            WRITE LINEAC AFTER PAGE.
            
-           ACCEPT WKS-HOY FROM DATE.
+           ACCEPT WKS-HOY-TBM FROM DATE.
            SET WKS-I TO 1 
            SEARCH T-MESE VARYING WKS-I
            AT END DISPLAY "NO EXISTE MES"
-           WHEN T-IDM (WKS-I) = WKS-MES
+           WHEN T-IDM (WKS-I) = WKS-MESTBM
+           
            MOVE T-MES (WKS-I) TO WKS-MESEB.
+           
            MOVE CORR WKS-HOY  TO WKS-ENCB.
            MOVE WKS-ENCB      TO LINEAC.
            WRITE LINEAC AFTER 2.
