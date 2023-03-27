@@ -385,10 +385,10 @@
            ADD WKS-TEM-INGRETO     TO WKS-SUM-CUFE.
       *--------------------------------------------------
       
-           
-      
-      
-           IF WKS-CHECK-FEC = WKS-FEC-INCUT
+      *-----------EXPERIMENTOS CON EL CORTE POR FECHA-------
+      *    IF WKS-CHECK-FEC = WKS-FEC-INCUT
+           IF WKS-CHECK-FEC = WKS-FEC-INCUT OR SID-PROYECTO =
+               WKS-IDR1CUT
                NEXT SENTENCE
            ELSE
                MOVE WKS-FEC-INCUT  TO WKS-ANOT
