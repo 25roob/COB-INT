@@ -71,7 +71,7 @@
       *=============                                                    
       *                 
            ACCEPT WKS-HOY FROM DATE.                                    
-           COMPUTE WKS-PAGO-FACT = WKS-ING-MENSUA / 30.                                                                                                
+           DIVIDE WKS-ING-MENSUA BY 30 GIVING WKS-PAGO-FACT.                                                                                                 
            MOVE WKS-FEC-INICIO TO WKS-SPLIT-FI.                         
            MOVE WKS-FEC-TERMIN TO WKS-SPLIT-FT.                         
                                                                         
@@ -125,8 +125,10 @@
            IF T-MES (WKS-I) = WKS-MESI                                  
                MOVE WKS-TEM-D TO WKS-D-INI                              
                SUBTRACT T-DIA (WKS-I) FROM WKS-D-INI                    
-               ADD WKS-DIAI TO WKS-D-INI                                
-               COMPUTE WKS-DPAS = WKS-ANOT * 365 - WKS-D-INI            
+               ADD WKS-DIAI TO WKS-D-INI
+               MULTIPLY WKS-ANOT BY 365 GIVING WKS-DPAS                 
+               SUBTRACT WKS-D-INI FROM WKS-DPAS                                   
+      *        COMPUTE WKS-DPAS = WKS-ANOT * 365 - WKS-D-INI            
                ADD 1 TO WKS-FIN1.                                       
                                                                         
            IF T-MES (WKS-I) = WKS-MES                                   
