@@ -434,10 +434,11 @@
            IF WKS-NUM-PAG = 0
                NEXT SENTENCE
            ELSE
-               MOVE WKS-SUM-TNP    TO WKS-PARTOT
+      *        MOVE WKS-SUM-TNP    TO WKS-PARTOT
+               MOVE WKS-SUM-CUFE   TO WKS-PARTOT
                MOVE WKS-TOTPAR     TO LINEAN
                WRITE LINEAN AFTER 1.
-      *         MOVE ZEROES         TO WKS-SUM-CUFE.
+               MOVE ZEROES         TO WKS-SUM-CUFE.
        
        2259-ACTUALIZA-ARC-CAT.
            MOVE SID-PROYECTO       TO ID-PROYECTO.
