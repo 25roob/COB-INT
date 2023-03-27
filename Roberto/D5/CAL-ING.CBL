@@ -24,11 +24,10 @@
            03 FILLER         PIC 9999 VALUE 0930.                       
            03 FILLER         PIC 9999 VALUE 1031.                       
            03 FILLER         PIC 9999 VALUE 1130.                       
-           03 FILLER         PIC 9999 VALUE 1231.                       
-           03 FILLER         PIC 9999 VALUE 0000.                       
+           03 FILLER         PIC 9999 VALUE 1231.                        
                                                                         
        01 T-MESES REDEFINES WKS-MESES.                                  
-           03 T-MESE OCCURS 13 TIMES.                                   
+           03 T-MESE OCCURS 12 TIMES.                                   
                05 T-MES      PIC 99.                                    
                05 T-DIA      PIC 99.                                    
                                                                         
