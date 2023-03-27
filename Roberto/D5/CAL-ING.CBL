@@ -92,20 +92,20 @@
            SUBTRACT WKS-D-INI FROM WKS-D-JU.                            
                                                                         
        150-CALCULO-DIAS.                                                
-           DISPLAY WKS-I.                                               
+      *    DISPLAY WKS-I.                                               
                                                                         
            ADD T-DIA (WKS-I) TO WKS-TEM-D.                              
-           DISPLAY WKS-TEM-D.                                           
+      *    DISPLAY WKS-TEM-D.                                           
                                                                         
            IF T-MES (WKS-I) = WKS-MES                                   
-               DISPLAY "T-MES (WKS-I) = WKS-MES"                        
+      *        DISPLAY "T-MES (WKS-I) = WKS-MES"                        
                MOVE WKS-TEM-D TO WKS-D-JU                               
                SUBTRACT T-DIA (WKS-I) FROM WKS-D-JU                     
                ADD WKS-DIA TO WKS-D-JU                                  
                ADD 1 TO WKS-FIN1.                                       
                                                                         
            IF T-MES (WKS-I) = WKS-MESI                                  
-               DISPLAY "T-MES (WKS-I) = WKS-MESI"                       
+      *        DISPLAY "T-MES (WKS-I) = WKS-MESI"                       
                MOVE WKS-TEM-D TO WKS-D-INI                              
                SUBTRACT T-DIA (WKS-I) FROM WKS-D-INI                    
                ADD WKS-DIAI TO WKS-D-INI                                
