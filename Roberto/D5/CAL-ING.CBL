@@ -10,7 +10,8 @@
        WORKING-STORAGE            SECTION.                              
                                                                         
        77 WKS-I              PIC 99.                                    
-       77 WKS-FIN1           PIC 9.                                     
+       77 WKS-FIN1           PIC 9.
+	   77 WKS-ESPERA         PIC X.
                                                                         
        01 WKS-MESES.                                                    
            03 FILLER         PIC 9999 VALUE 0131.                       
@@ -48,18 +49,18 @@
            03 WKS-MEST       PIC 99.                                    
            03 WKS-DIAT       PIC 99.                                    
                                                                         
-       01 WKS-PAGO-FACT      PIC 99999V99.                              
+       01 WKS-PAGO-FACT      PIC 9999999V99.                              
        01 WKS-DPAS           PIC 9999.                                  
        01 WKS-D-JU           PIC 9999.                                  
        01 WKS-TEM-D          PIC 9999.                                  
-       01 WKS-D-INI          PIC 999.                                   
+       01 WKS-D-INI          PIC 9999.                                   
                                                                         
        LINKAGE SECTION.                                                
-       01 WKS-LINK-DATA.                                                
-           03 WKS-FEC-INICIO PIC 9(08).                  
-           03 WKS-FEC-TERMIN PIC 9(08).                  
-           03 WKS-ING-MENSUA PIC 9(08)V99.                  
-           03 WKS-ING-TOTALD PIC 9(10)V99.                              
+       01 WKS-LINK-DATA.
+           03 WKS-FEC-INICIO   PIC 9(08).
+           03 WKS-FEC-TERMIN   PIC 9(08).
+           03 WKS-ING-MENSUA   PIC 9(10)V99.
+           03 WKS-ING-TOTALD   PIC 9(13)V99.                            
                                                                         
        PROCEDURE  DIVISION USING WKS-LINK-DATA.                                                                      
        000-INI.                                                         
@@ -70,21 +71,27 @@
        100-PROCESO.                                                     
       *=============                                                    
       *                 
+	       MOVE ZEROES TO WKS-I.
            ACCEPT WKS-HOY FROM DATE.                                    
            DIVIDE WKS-ING-MENSUA BY 30 GIVING WKS-PAGO-FACT.                                                                                                 
            MOVE WKS-FEC-INICIO TO WKS-SPLIT-FI.                         
            MOVE WKS-FEC-TERMIN TO WKS-SPLIT-FT.                         
                                                                         
-           IF WKS-ANOI = WKS-ANOT                                       
+           IF WKS-ANOI = WKS-ANO                                       
                PERFORM 120-DIAS-TRANSC-MA                               
                MULTIPLY WKS-D-JU BY WKS-PAGO-FACT                       
                    GIVING WKS-ING-TOTALD                                
            ELSE                                                         
                PERFORM 170-DIAS-TRANSC-DA                               
                MULTIPLY WKS-D-JU BY WKS-PAGO-FACT                       
-                   GIVING WKS-ING-TOTALD.                               
+                   GIVING WKS-ING-TOTALD.  
+           DISPLAY WKS-FEC-INICIO.			   
+           DISPLAY WKS-D-JU.
+           DISPLAY WKS-PAGO-FACT.
+           DISPLAY WKS-ING-TOTALD.
                                                                         
-       120-DIAS-TRANSC-MA.                                              
+       120-DIAS-TRANSC-MA.  
+           DISPLAY "MISMO ANO QUE ACTUAL".	   
            PERFORM 150-CALCULO-DIAS VARYING WKS-I                       
                FROM 1 BY 1 UNTIL WKS-I GREATER THAN 12.                 
                                                                         
@@ -113,22 +120,27 @@
            IF WKS-FIN1 = 2                                              
                ADD 15 TO WKS-I.                                         
                                                                         
-       170-DIAS-TRANSC-DA.                                              
-           SUBTRACT WKS-ANOI FROM WKS-ANOT.                             
+       170-DIAS-TRANSC-DA.   
+           DISPLAY "DIFERENTE ANO QUE ACTUAL".	   
+           SUBTRACT WKS-ANOI FROM WKS-ANO. 
+           DISPLAY "VALORES DE CALCULO:".
+           DISPLAY WKS-ANO.		   
            PERFORM 190-DELTA-DIAS VARYING WKS-I                         
                FROM 1 BY 1 UNTIL WKS-I > 12.                            
-           ADD WKS-DPAS TO WKS-D-JU.                                    
+           ADD WKS-DPAS TO WKS-D-JU.  
+           DISPLAY "FIN DE VALORES DE CALCULO".		   
                                                                         
        190-DELTA-DIAS.                                                  
            ADD T-DIA (WKS-I) TO WKS-TEM-D.                              
-                                                                        
+           DISPLAY WKS-TEM-D.
+           DISPLAY T-MES (WKS-I).		   
            IF T-MES (WKS-I) = WKS-MESI                                  
                MOVE WKS-TEM-D TO WKS-D-INI                              
                SUBTRACT T-DIA (WKS-I) FROM WKS-D-INI                    
                ADD WKS-DIAI TO WKS-D-INI
-               MULTIPLY WKS-ANOT BY 365 GIVING WKS-DPAS                 
-               SUBTRACT WKS-D-INI FROM WKS-DPAS                                   
-      *        COMPUTE WKS-DPAS = WKS-ANOT * 365 - WKS-D-INI            
+      *         MULTIPLY WKS-ANO BY 365 GIVING WKS-DPAS                 
+      *         SUBTRACT WKS-D-INI FROM WKS-DPAS                                   
+               COMPUTE WKS-DPAS = WKS-ANO * 365 - WKS-D-INI            
                ADD 1 TO WKS-FIN1.                                       
                                                                         
            IF T-MES (WKS-I) = WKS-MES                                   
@@ -139,5 +151,4 @@
                                                                         
            IF WKS-FIN1 = 2                                              
                ADD 15 TO WKS-I.                                         
-                                                                        
-      
+                                   

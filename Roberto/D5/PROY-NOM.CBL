@@ -65,9 +65,9 @@
        01 WKS-ETIQ-R1     PIC X(24) VALUE "RFQV/S015/LIST/R-NOMPRO.".
        01 WKS-ETIQ-R2     PIC X(24) VALUE "RFQV/S015/LIST/R-CATPRO.".
        
-       01 WKS-SUM-TNP     PIC 9(08)V99.
-       01 WKS-SUM-CUFE    PIC 9(08)V99.
-       01 WKS-IMP-FINAL   PIC 9(10)V99.
+       01 WKS-SUM-TNP     PIC 9(12)V99.
+       01 WKS-SUM-CUFE    PIC 9(12)V99.
+       01 WKS-IMP-FINAL   PIC 9(12)V99.
        01 WKS-CHECK-FEC   PIC 9999.
 
        01 WKS-INPUTFEC.
@@ -83,8 +83,9 @@
        77 WKS-ESPERA      PIC X.
        77 WKS-FINR2       PIC 9.
        77 WKS-FINO1       PIC 9.
+       77 WKS-F-RWRT      PIC 9.
        
-       77 WKS-TEM-INGRETO PIC 9(08)V99.
+       77 WKS-TEM-INGRETO PIC 9(13)V99.
        
        01 WKS-MESES.
            03 FILLER       PIC X(05) VALUE "ENE01".
@@ -147,8 +148,8 @@
         01 WKS-LINK-DATA.
            03 WKS-FEC-INICIO   PIC 9(08).
            03 WKS-FEC-TERMIN   PIC 9(08).
-           03 WKS-ING-MENSUA   PIC 9(08)V99.
-           03 WKS-ING-TOTALD   PIC 9(10)V99.
+           03 WKS-ING-MENSUA   PIC 9(10)V99.
+           03 WKS-ING-TOTALD   PIC 9(13)V99.
        
       *===========VARIABLES DE REPORTE 1===========
        01 WKS-ENC1.
@@ -193,17 +194,17 @@
            03 FILLER       PIC X(02) VALUE SPACES.
            03 WKS-FEC-TERD PIC X(09).
            03 FILLER       PIC X(01) VALUE SPACES.
-           03 WKS-ING-MEND PIC ZZ,ZZZ,ZZ9.99.
-           03 FILLER       PIC X(01) VALUE SPACES.
-           03 WKS-ING-TOT1 PIC ZZ,ZZZ,ZZ9.99.
+           03 WKS-ING-MEND PIC ZZZ,ZZ9.99.
+           03 FILLER       PIC X(03) VALUE SPACES.
+           03 WKS-ING-TOT1 PIC ZZZZ,ZZZ,ZZ9.99.
            
        01 WKS-PIE1.
-           03 FILLER       PIC X(20) VALUE SPACES.
+           03 FILLER       PIC X(22) VALUE SPACES.
            03 FILLER       PIC X(16) VALUE
                "TOTAL NOMINA DE ".
            03 WKS-NOM-PROP PIC X(15).
-           03 FILLER       PIC X(05) VALUE ":    ".
-           03 WKS-TOANU    PIC $$,$$$,$$9.99.
+           03 FILLER       PIC X(02) VALUE ": ".
+           03 WKS-TOANU    PIC $$$,$$$,$$$,$$9.99.
               
 
       *===========VARIABLES DE REPORTE 2===========
@@ -243,25 +244,25 @@
            03 FILLER       PIC X(03) VALUE SPACES.
            03 WKS-NOM-PROD PIC X(17).
            03 FILLER       PIC X(02) VALUE SPACES.
-           03 FILLER       PIC X(01) VALUE SPACES.
+           03 FILLER       PIC X(03) VALUE SPACES.
            03 FILLER       PIC X(01) VALUE SPACES.
            03 FILLER       PIC X(13) VALUE SPACES.
            03 FILLER       PIC X(01) VALUE SPACES.
            03 WKS-ING-TOTD PIC ZZ,ZZZ,ZZ9.99.
            
        01 WKS-TOTPAR.
-           03 FILLER       PIC X(30) VALUE SPACES.
+           03 FILLER       PIC X(29) VALUE SPACES.
            03 FILLER       PIC X(22) VALUE "TOTAL ANUALIDADES ANO ".
            03 WKS-ANOT     PIC 9999.
-           03 FILLER       PIC X(03) VALUE ":  ".
-           03 WKS-PARTOT   PIC $$,$$$,$$9.99.
+           03 FILLER       PIC X(01) VALUE ":".
+           03 WKS-PARTOT   PIC $$,$$$,$$$,$$9.99.
            
        01 WKS-PIEA.
            03 FILLER       PIC X(12) VALUE "TOTAL PROY: ".
            03 WKS-PROY-CO  PIC 99.
-           03 FILLER       PIC X(30) VALUE SPACES.
+           03 FILLER       PIC X(26) VALUE SPACES.
            03 FILLER       PIC X(16) VALUE "TOTAL IMPORTES: ".
-           03 WKS-TOT-IMPO PIC $$,$$$,$$9.99.
+           03 WKS-TOT-IMPO PIC $$$,$$$,$$$,$$9.99.
            
            
            
@@ -368,29 +369,34 @@
 
            MOVE SINGRESO-MENSUAL   TO WKS-ING-MEND.
            
-      *----------TODO: TESTEAR EL CAL-ING------------
+      *----------CAL-ING------------
+      
            MOVE SFECHA-INICIO      TO WKS-FEC-INICIO.
            MOVE SFECHA-TERMINO     TO WKS-FEC-TERMIN.
            MOVE SINGRESO-MENSUAL   TO WKS-ING-MENSUA.
 
-      *     CALL "CAL-ING" USING WKS-LINK-DATA.
-      *     MOVE WKS-ING-TOTALD TO WKS-TEM-INGRETO.
+           CALL "CAL-ING" USING WKS-LINK-DATA.
+		   DISPLAY SNOMBRE-CONSULTOR.
+		   ACCEPT WKS-ESPERA.
+		   
+           MOVE WKS-ING-TOTALD     TO WKS-ING-TOT1.
 
-           MOVE 10000              TO WKS-TEM-INGRETO.
+      *     MOVE 10000              TO WKS-TEM-INGRETO.
            
-           MOVE WKS-TEM-INGRETO    TO WKS-ING-TOT1.
+      *     MOVE WKS-TEM-INGRETO    TO WKS-ING-TOT1.
            
-           ADD WKS-TEM-INGRETO     TO WKS-SUM-TNP.
+           ADD WKS-ING-TOTALD     TO WKS-SUM-TNP.
            
-           ADD WKS-TEM-INGRETO     TO WKS-SUM-CUFE.
+           ADD WKS-ING-TOTALD     TO WKS-SUM-CUFE.
       *--------------------------------------------------
       
       *-----------EXPERIMENTOS CON EL CORTE POR FECHA-------
-      *    IF WKS-CHECK-FEC = WKS-FEC-INCUT
-           IF WKS-CHECK-FEC = WKS-FEC-INCUT OR SID-PROYECTO =
-               WKS-IDR1CUT
-               NEXT SENTENCE
-           ELSE
+      *
+      *     IF WKS-CHECK-FEC = WKS-FEC-INCUT
+           IF WKS-CHECK-FEC IS NOT EQUAL WKS-FEC-INCUT OR 
+               SID-PROYECTO IS NOT EQUAL WKS-IDR1CUT
+      *         NEXT SENTENCE
+      *     ELSE
                MOVE WKS-FEC-INCUT  TO WKS-ANOT
                MOVE WKS-CHECK-FEC  TO WKS-FEC-INCUT
                PERFORM 2257-ESCRIBE-CORTE-FECHA.
@@ -403,7 +409,8 @@
                PERFORM 2222-GENERA-ENCABEZADO
                MOVE SID-PROYECTO   TO WKS-IDR1CUT
                PERFORM 2259-ACTUALIZA-ARC-CAT
-               MOVE 0              TO WKS-SUM-TNP.
+               MOVE ZEROES            TO WKS-SUM-TNP
+                                      WKS-SUM-CUFE. 
                
            MOVE WKS-DET1 TO LINEAN.
            WRITE LINEAN AFTER 1.
@@ -434,26 +441,30 @@
            IF WKS-NUM-PAG = 0
                NEXT SENTENCE
            ELSE
-      *        MOVE WKS-SUM-TNP    TO WKS-PARTOT
-               MOVE WKS-SUM-CUFE   TO WKS-PARTOT
+               MOVE WKS-SUM-TNP    TO WKS-PARTOT
+      *         MOVE WKS-SUM-CUFE   TO WKS-PARTOT
                MOVE WKS-TOTPAR     TO LINEAN
-               WRITE LINEAN AFTER 1.
+               WRITE LINEAN AFTER 1
                MOVE ZEROES         TO WKS-SUM-CUFE.
        
        2259-ACTUALIZA-ARC-CAT.
+	       MOVE 0 TO WKS-F-RWRT.
            MOVE SID-PROYECTO       TO ID-PROYECTO.
            PERFORM 2225-ID-ACT-A-NOM-PRO.
+           MOVE WKS-TEM-NOMPRO TO NOMBRE-PROY.
+           MOVE WKS-SUM-TNP    TO IMP-TOTAL.
            READ ARC-CAT
                INVALID KEY
-               MOVE WKS-TEM-NOMPRO TO NOMBRE-PROY
-               MOVE WKS-SUM-TNP    TO IMP-TOTAL
-               WRITE REG-CAT.
+               WRITE REG-CAT
+               MOVE 1 TO WKS-F-RWRT.
            
-           MOVE WKS-TEM-NOMPRO     TO NOMBRE-PROY.
-           MOVE WKS-SUM-TNP        TO IMP-TOTAL.
-           REWRITE REG-CAT.
+           IF WKS-F-RWRT = 0
+               REWRITE REG-CAT.
                
        2270-FIN.
+           MOVE WKS-FEC-INCUT  TO WKS-ANOT.
+           MOVE WKS-CHECK-FEC  TO WKS-FEC-INCUT.
+           PERFORM 2257-ESCRIBE-CORTE-FECHA.
            PERFORM 2255-GENERA-PIE.
            DISPLAY "TERMINO EL PROCESO DE REPORTE 1".
 
