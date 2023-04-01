@@ -100,9 +100,31 @@
 	   01 WKS-ENCA.
            03 FILLER         PIC X(28) VALUE SPACES.
            03 FILLER         PIC X(33)
-               VALUE "RESUMEN DE MESES DE ALTA DEL AÑO ".
+               VALUE "RESUMEN DE MESES DE ALTA DEL ANO ".
 		   03 WKS-CUANO      PIC 9999.
-       
+		   
+       01 WKS-ENCC.
+	       03 FILLER         PIC X(14) VALUE SPACES.
+           03 WKS-TTAR1      PIC X(07).	   
+		   03 FILLER         PIC X(11) VALUE SPACES.
+		   03 WKS-TTAR2      PIC X(07).
+		   03 FILLER         PIC X(11) VALUE SPACES.
+		   03 WKS-TTAR3      PIC X(07).
+		   03 FILLER         PIC X(11) VALUE SPACES.
+		   03 FILLER         PIC X(05) VALUE "TOTAL".
+		   
+	   01 WKS-DETALLE.
+	       03 WKS-MESDE      PIC X(10).
+		   03 FILLER         PIC X(06) VALUE SPACES.
+		   03 WKS-CTAR1      PIC 99.
+		   03 FILLER         PIC X(16) VALUE SPACES.
+		   03 WKS-CTAR2      PIC 99.
+		   03 FILLER         PIC X(16) VALUE SPACES.
+		   03 WKS-CTAR3      PIC 99.
+		   03 FILLER         PIC X(15) VALUE SPACES.
+		   03 WKS-CTOTAL     PIC 99.
+		   
+		   
        PROCEDURE DIVISION.
        INICIO.
            PERFORM 1000-INICIO.
@@ -136,12 +158,12 @@
            AT END MOVE 1 TO WKS-FIN.
            
        2120-LLENA-TABLA.
-           IF T-TAR (WKS-I) = SPACES
-               MOVE NOM-TAR TO T-TAR (WKS-I)
+           IF T-TAR (WKS-J) = SPACES
+               MOVE NOM-TAR TO T-TAR (WKS-J)
                ADD 1 TO T-CLTS (WKS-I WKS-J WKS-K).
            
-           IF T-TAR (WKS-I) = NOM-TAR AND T-NME (WKS-J) = WKS-SMES
-               AND T-AN (WKS-K) = WKS-SANO
+           IF T-TAR (WKS-J) = NOM-TAR AND T-NME (WKS-K) = WKS-SMES
+               AND T-AN (WKS-I) = WKS-SANO
                ADD 1 TO T-CLTS (WKS-I WKS-J WKS-K).
        
        2200-GENERA-REPORTE.
@@ -156,7 +178,8 @@
        
        2250-PROCESO.
        
-           PERFORM 2252-ENCABEZADO.
+	       IF WKS-L = 1 AND WKS-M = 1 AND WKS-N = 1
+               PERFORM 2252-ENCABEZADO.
        
        
        2252-ENCABEZADO.
@@ -165,8 +188,11 @@
 		   MOVE WKS-ENCB TO LINEA.
 		   WRITE LINEA AFTER PAGE.
 		   
-		   MOVE T-AN (WKS-I) TO WKS-CUANO.
-		   MOVE 
+		   MOVE T-AN (WKS-L) TO WKS-CUANO.
+		   MOVE WKS-ENCA TO LINEA.
+		   WRITE LINEA AFTER 1.
+		   
+		   
        
        2270-FIN.
        
