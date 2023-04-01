@@ -264,7 +264,7 @@
            03 FILLER       PIC X(16) VALUE "TOTAL IMPORTES: ".
            03 WKS-TOT-IMPO PIC $$$,$$$,$$$,$$9.99.
            
-           
+       01 WKS-LINEAA       PIC X(74).
            
        PROCEDURE DIVISION.
        INICIO.
@@ -376,27 +376,23 @@
            MOVE SINGRESO-MENSUAL   TO WKS-ING-MENSUA.
 
            CALL "CAL-ING" USING WKS-LINK-DATA.
-		   DISPLAY SNOMBRE-CONSULTOR.
-		   ACCEPT WKS-ESPERA.
-		   
+           DISPLAY SNOMBRE-CONSULTOR.
+           
+           
            MOVE WKS-ING-TOTALD     TO WKS-ING-TOT1.
-
-      *     MOVE 10000              TO WKS-TEM-INGRETO.
            
-      *     MOVE WKS-TEM-INGRETO    TO WKS-ING-TOT1.
            
-           ADD WKS-ING-TOTALD     TO WKS-SUM-TNP.
-           
-           ADD WKS-ING-TOTALD     TO WKS-SUM-CUFE.
+           DISPLAY WKS-ING-TOTALD.
+           DISPLAY WKS-SUM-CUFE.
+           DISPLAY WKS-SUM-TNP.
+      *       ACCEPT WKS-ESPERA.
       *--------------------------------------------------
       
       *-----------EXPERIMENTOS CON EL CORTE POR FECHA-------
       *
-      *     IF WKS-CHECK-FEC = WKS-FEC-INCUT
            IF WKS-CHECK-FEC IS NOT EQUAL WKS-FEC-INCUT OR 
                SID-PROYECTO IS NOT EQUAL WKS-IDR1CUT
-      *         NEXT SENTENCE
-      *     ELSE
+               
                MOVE WKS-FEC-INCUT  TO WKS-ANOT
                MOVE WKS-CHECK-FEC  TO WKS-FEC-INCUT
                PERFORM 2257-ESCRIBE-CORTE-FECHA.
@@ -409,8 +405,11 @@
                PERFORM 2222-GENERA-ENCABEZADO
                MOVE SID-PROYECTO   TO WKS-IDR1CUT
                PERFORM 2259-ACTUALIZA-ARC-CAT
-               MOVE ZEROES            TO WKS-SUM-TNP
-                                      WKS-SUM-CUFE. 
+               INITIALIZE WKS-SUM-TNP WKS-SUM-CUFE. 
+               
+           ADD WKS-ING-TOTALD     TO WKS-SUM-TNP.
+           
+           ADD WKS-ING-TOTALD     TO WKS-SUM-CUFE.
                
            MOVE WKS-DET1 TO LINEAN.
            WRITE LINEAN AFTER 1.
@@ -441,16 +440,15 @@
            IF WKS-NUM-PAG = 0
                NEXT SENTENCE
            ELSE
-               MOVE WKS-SUM-TNP    TO WKS-PARTOT
-      *         MOVE WKS-SUM-CUFE   TO WKS-PARTOT
+      *         MOVE WKS-SUM-TNP    TO WKS-PARTOT
+               MOVE WKS-SUM-CUFE   TO WKS-PARTOT
                MOVE WKS-TOTPAR     TO LINEAN
                WRITE LINEAN AFTER 1
-               MOVE ZEROES         TO WKS-SUM-CUFE.
+               INITIALIZE WKS-SUM-CUFE.
        
        2259-ACTUALIZA-ARC-CAT.
-	       MOVE 0 TO WKS-F-RWRT.
+           MOVE 0 TO WKS-F-RWRT.
            MOVE SID-PROYECTO       TO ID-PROYECTO.
-           PERFORM 2225-ID-ACT-A-NOM-PRO.
            MOVE WKS-TEM-NOMPRO TO NOMBRE-PROY.
            MOVE WKS-SUM-TNP    TO IMP-TOTAL.
            READ ARC-CAT
@@ -529,9 +527,13 @@
            AT END MOVE 1      TO WKS-FINR2.
        
        2680-FIN.
+	       MOVE ALL "-" TO WKS-LINEAA.
+		   MOVE WKS-LINEAA TO LINEAC.
+		   WRITE LINEAC AFTER 1.
+		   
            MOVE WKS-IMP-FINAL TO WKS-TOT-IMPO.
            MOVE WKS-PIEA      TO LINEAC.
-           WRITE LINEAC.
+           WRITE LINEAC AFTER 1.
        
        3000-FIN.
               
