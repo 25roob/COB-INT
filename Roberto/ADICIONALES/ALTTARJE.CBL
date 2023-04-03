@@ -64,13 +64,17 @@
        
        77 WKS-FIN            PIC 9.
        77 WKS-DESC           PIC X.
-       77 WKS-I              PIC 9.
+       77 WKS-I              PIC 99.
        77 WKS-J              PIC 99.
        77 WKS-K              PIC 99.
        77 WKS-L              PIC 99.
        77 WKS-M              PIC 99.
        77 WKS-N              PIC 99.
+       77 WKS-ESPERA         PIC X.
        
+       01 WKS-CTAR1          PIC 99.
+       01 WKS-CTAR2          PIC 99.
+       01 WKS-CTAR3          PIC 99.
        
        01 WKS-SPLITFE.
            03 WKS-SANO       PIC 9999.
@@ -96,35 +100,47 @@
       *     03 FILLER         PIC X(38) VALUE SPACES.
       *     03 FILLER         PIC X(07) VALUE "PAG. : ".
       *     03 WKS-NUM-PAGA   PIC 9(02).
-	  
-	   01 WKS-ENCA.
-           03 FILLER         PIC X(28) VALUE SPACES.
+      
+       01 WKS-ENCA.
+           03 FILLER         PIC X(20) VALUE SPACES.
            03 FILLER         PIC X(33)
                VALUE "RESUMEN DE MESES DE ALTA DEL ANO ".
-		   03 WKS-CUANO      PIC 9999.
-		   
+           03 WKS-CUANO      PIC 9999.
+           
        01 WKS-ENCC.
-	       03 FILLER         PIC X(14) VALUE SPACES.
-           03 WKS-TTAR1      PIC X(07).	   
-		   03 FILLER         PIC X(11) VALUE SPACES.
-		   03 WKS-TTAR2      PIC X(07).
-		   03 FILLER         PIC X(11) VALUE SPACES.
-		   03 WKS-TTAR3      PIC X(07).
-		   03 FILLER         PIC X(11) VALUE SPACES.
-		   03 FILLER         PIC X(05) VALUE "TOTAL".
-		   
-	   01 WKS-DETALLE.
-	       03 WKS-MESDE      PIC X(10).
-		   03 FILLER         PIC X(06) VALUE SPACES.
-		   03 WKS-CTAR1      PIC 99.
-		   03 FILLER         PIC X(16) VALUE SPACES.
-		   03 WKS-CTAR2      PIC 99.
-		   03 FILLER         PIC X(16) VALUE SPACES.
-		   03 WKS-CTAR3      PIC 99.
-		   03 FILLER         PIC X(15) VALUE SPACES.
-		   03 WKS-CTOTAL     PIC 99.
-		   
-		   
+           03 FILLER         PIC X(14) VALUE SPACES.
+           03 WKS-TTAR1      PIC X(07).       
+           03 FILLER         PIC X(11) VALUE SPACES.
+           03 WKS-TTAR2      PIC X(07).
+           03 FILLER         PIC X(11) VALUE SPACES.
+           03 WKS-TTAR3      PIC X(07).
+           03 FILLER         PIC X(11) VALUE SPACES.
+           03 FILLER         PIC X(05) VALUE "TOTAL".
+           
+       01 WKS-DETALLE.
+           03 WKS-MESDE      PIC X(10).
+           03 FILLER         PIC X(06) VALUE SPACES.
+           03 WKS-CTARF1     PIC Z9.
+           03 FILLER         PIC X(16) VALUE SPACES.
+           03 WKS-CTARF2     PIC Z9.
+           03 FILLER         PIC X(16) VALUE SPACES.
+           03 WKS-CTARF3     PIC Z9.
+           03 FILLER         PIC X(15) VALUE SPACES.
+           03 WKS-CTOTAL     PIC 99.
+           
+       01 WKS-PIE.
+           03 FILLER         PIC X(10) VALUE "TOTAL:".
+           03 FILLER         PIC X(06) VALUE SPACES.
+           03 WKS-CTO1       PIC 99.
+           03 FILLER         PIC X(16) VALUE SPACES.
+           03 WKS-CTO2       PIC 99.
+           03 FILLER         PIC X(16) VALUE SPACES.
+           03 WKS-CTO3       PIC 99.
+           03 FILLER         PIC X(15) VALUE SPACES.
+           03 WKS-CTOTALF    PIC 99.
+       
+       01 WKS-LINEA-SOL      PIC X(73).
+           
        PROCEDURE DIVISION.
        INICIO.
            PERFORM 1000-INICIO.
@@ -133,6 +149,7 @@
            STOP RUN.
        
        1000-INICIO.
+           DISPLAY SPACES ERASE.
            OPEN OUTPUT REP-TAC.
            OPEN INPUT CLIENTES.
            
@@ -158,9 +175,12 @@
            AT END MOVE 1 TO WKS-FIN.
            
        2120-LLENA-TABLA.
-           IF T-TAR (WKS-J) = SPACES
+           IF T-TAR (WKS-J) = SPACES AND T-AN (WKS-I) = WKS-SANO
+      *           DISPLAY WKS-I WKS-J WKS-K NOM-TAR
+      *           ACCEPT WKS-ESPERA
                MOVE NOM-TAR TO T-TAR (WKS-J)
-               ADD 1 TO T-CLTS (WKS-I WKS-J WKS-K).
+               ADD 1 TO T-CLTS (WKS-I WKS-J WKS-K)
+               ADD 15 TO WKS-I WKS-J WKS-K.
            
            IF T-TAR (WKS-J) = NOM-TAR AND T-NME (WKS-K) = WKS-SMES
                AND T-AN (WKS-I) = WKS-SANO
@@ -168,31 +188,73 @@
        
        2200-GENERA-REPORTE.
            PERFORM 2220-INICIO.
+           
            PERFORM 2250-PROCESO
-               VARYING WKS-L FROM 1 BY 1 UNTIL WKS-L > 4
-               AFTER WKS-M FROM 1 BY 1 UNTIL WKS-M > 3
-               AFTER WKS-N FROM 1 BY 1 UNTIL WKS-N > 12.
+               VARYING WKS-L FROM 1 BY 1 UNTIL WKS-L > 4.
+               
            PERFORM 2270-FIN.
            
        2220-INICIO.
+           MOVE 1 TO WKS-M WKS-N.
        
        2250-PROCESO.
-       
-	       IF WKS-L = 1 AND WKS-M = 1 AND WKS-N = 1
-               PERFORM 2252-ENCABEZADO.
-       
+           INITIALIZE WKS-CTO1
+                      WKS-CTO2
+                      WKS-CTO3.
+           
+           PERFORM 2252-ENCABEZADO.
+           
+           PERFORM 2253-ESCRIBE-DETALLE
+               VARYING WKS-N FROM 1 BY 1 UNTIL WKS-N > 12.
+               
+           PERFORM 2257-GENERA-PIE.
        
        2252-ENCABEZADO.
-	       ACCEPT WKS-HOY FROM DATE.
-		   MOVE CORR WKS-HOY       TO WKS-ENCB.
-		   MOVE WKS-ENCB TO LINEA.
-		   WRITE LINEA AFTER PAGE.
-		   
-		   MOVE T-AN (WKS-L) TO WKS-CUANO.
-		   MOVE WKS-ENCA TO LINEA.
-		   WRITE LINEA AFTER 1.
-		   
-		   
+           ACCEPT WKS-HOY FROM DATE.
+           MOVE CORR WKS-HOY       TO WKS-ENCB.
+           MOVE WKS-ENCB TO LINEA.
+           WRITE LINEA AFTER PAGE.
+           
+           MOVE T-AN (WKS-L) TO WKS-CUANO.
+           MOVE WKS-ENCA TO LINEA.
+           WRITE LINEA AFTER 1.
+           
+           MOVE T-TAR (1) TO WKS-TTAR1.
+           MOVE T-TAR (2) TO WKS-TTAR2.
+           MOVE T-TAR (3) TO WKS-TTAR3.
+           MOVE WKS-ENCC TO LINEA.
+           WRITE LINEA AFTER 2.
+           
+               
+       2253-ESCRIBE-DETALLE.
+           MOVE T-MES (WKS-N) TO WKS-MESDE.
+           
+           MOVE T-CLTS (WKS-L 1 WKS-N) TO WKS-CTAR1.
+           MOVE T-CLTS (WKS-L 2 WKS-N) TO WKS-CTAR2.
+           MOVE T-CLTS (WKS-L 3 WKS-N) TO WKS-CTAR3.
+           
+           MOVE WKS-CTAR1 TO WKS-CTARF1.
+           MOVE WKS-CTAR2 TO WKS-CTARF2.
+           MOVE WKS-CTAR3 TO WKS-CTARF3.
+           
+           ADD WKS-CTAR1 TO WKS-CTO1.
+           ADD WKS-CTAR2 TO WKS-CTO2.
+           ADD WKS-CTAR3 TO WKS-CTO3.
+           
+           ADD WKS-CTAR1 WKS-CTAR2 TO WKS-CTAR3 GIVING WKS-CTOTAL.
+           
+           MOVE WKS-DETALLE TO LINEA.
+           WRITE LINEA AFTER 1.
+           
+       2257-GENERA-PIE.
+       
+           MOVE ALL "-" TO WKS-LINEA-SOL.
+           MOVE WKS-LINEA-SOL TO LINEA.
+           WRITE LINEA AFTER 1.
+       
+           ADD WKS-CTO1 WKS-CTO2 TO WKS-CTO3 GIVING WKS-CTOTALF.
+           MOVE WKS-PIE TO LINEA.
+           WRITE LINEA AFTER 1.
        
        2270-FIN.
        
