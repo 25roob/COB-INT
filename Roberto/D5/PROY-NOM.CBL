@@ -187,22 +187,22 @@
            03 FILLER       PIC X(13) VALUE "INGRESO TOTAL".
            
        01 WKS-DET1.
-           03 FILLER       PIC X(01) VALUE SPACES.
+      *     03 FILLER       PIC X(01) VALUE SPACES.
            03 WKS-NOM-CONS PIC X(20).
            03 FILLER       PIC X(03) VALUE SPACES.
            03 WKS-FEC-INID PIC X(09).
            03 FILLER       PIC X(02) VALUE SPACES.
            03 WKS-FEC-TERD PIC X(09).
-           03 FILLER       PIC X(01) VALUE SPACES.
+           03 FILLER       PIC X(02) VALUE SPACES.
            03 WKS-ING-MEND PIC ZZZ,ZZ9.99.
            03 FILLER       PIC X(03) VALUE SPACES.
            03 WKS-ING-TOT1 PIC ZZZZ,ZZZ,ZZ9.99.
            
        01 WKS-PIE1.
-           03 FILLER       PIC X(22) VALUE SPACES.
+           03 FILLER       PIC X(20) VALUE SPACES.
            03 FILLER       PIC X(16) VALUE
                "TOTAL NOMINA DE ".
-           03 WKS-NOM-PROP PIC X(15).
+           03 WKS-NOM-PROP PIC X(17).
            03 FILLER       PIC X(02) VALUE ": ".
            03 WKS-TOANU    PIC $$$,$$$,$$$,$$9.99.
               
@@ -229,13 +229,13 @@
        01 WKS-ENCC.
       *       03 FILLER         PIC X(03) VALUE SPACES.
            03 FILLER       PIC X(16) VALUE "ID PROYECTO".
-           03 FILLER       PIC X(01) VALUE SPACES.
+           03 FILLER       PIC X(08) VALUE SPACES.
            03 FILLER       PIC X(12) VALUE "NOMBRE".
            03 FILLER       PIC X(01) VALUE SPACES.
-           03 FILLER       PIC X(13) VALUE SPACES.
+           03 FILLER       PIC X(06) VALUE SPACES.
            03 FILLER       PIC X(01) VALUE SPACES.
            03 FILLER       PIC X(15) VALUE SPACES.
-           03 FILLER       PIC X(01) VALUE SPACES.
+           03 FILLER       PIC X(03) VALUE SPACES.
            03 FILLER       PIC X(13) VALUE "IMPORTE".
            
        01 WKS-DETA.
@@ -376,15 +376,15 @@
            MOVE SINGRESO-MENSUAL   TO WKS-ING-MENSUA.
 
            CALL "CAL-ING" USING WKS-LINK-DATA.
-           DISPLAY SNOMBRE-CONSULTOR.
+      *     DISPLAY SNOMBRE-CONSULTOR.
            
            
            MOVE WKS-ING-TOTALD     TO WKS-ING-TOT1.
            
            
-           DISPLAY WKS-ING-TOTALD.
-           DISPLAY WKS-SUM-CUFE.
-           DISPLAY WKS-SUM-TNP.
+      *     DISPLAY WKS-ING-TOTALD.
+      *     DISPLAY WKS-SUM-CUFE.
+      *     DISPLAY WKS-SUM-TNP.
       *       ACCEPT WKS-ESPERA.
       *--------------------------------------------------
       
@@ -403,14 +403,16 @@
                PERFORM 2255-GENERA-PIE
                
                PERFORM 2222-GENERA-ENCABEZADO
-               MOVE SID-PROYECTO   TO WKS-IDR1CUT
                PERFORM 2259-ACTUALIZA-ARC-CAT
+               MOVE SID-PROYECTO   TO WKS-IDR1CUT
+               
                INITIALIZE WKS-SUM-TNP WKS-SUM-CUFE. 
                
            ADD WKS-ING-TOTALD     TO WKS-SUM-TNP.
            
            ADD WKS-ING-TOTALD     TO WKS-SUM-CUFE.
-               
+           
+           
            MOVE WKS-DET1 TO LINEAN.
            WRITE LINEAN AFTER 1.
            
@@ -427,12 +429,14 @@
            MOVE WKS-SPANO          TO WKS-YEAR.
            
        2255-GENERA-PIE.
+           PERFORM 2225-ID-ACT-A-NOM-PRO.
+           MOVE WKS-NOM-PROE TO WKS-NOM-PROP.
+           MOVE WKS-SUM-TNP TO WKS-TOANU.
+           
            IF WKS-NUM-PAG = 0
                NEXT SENTENCE
            ELSE
-               PERFORM 2225-ID-ACT-A-NOM-PRO
-               MOVE WKS-NOM-PROE TO WKS-NOM-PROP
-               MOVE WKS-SUM-TNP TO WKS-TOANU
+               
                MOVE WKS-PIE1 TO LINEAN
                WRITE LINEAN AFTER 2.
        
@@ -448,22 +452,28 @@
        
        2259-ACTUALIZA-ARC-CAT.
            MOVE 0 TO WKS-F-RWRT.
-           MOVE SID-PROYECTO       TO ID-PROYECTO.
-           MOVE WKS-TEM-NOMPRO TO NOMBRE-PROY.
-           MOVE WKS-SUM-TNP    TO IMP-TOTAL.
+           MOVE WKS-IDR1CUT       TO ID-PROYECTO.
            READ ARC-CAT
                INVALID KEY
+               MOVE WKS-NOM-PROP   TO NOMBRE-PROY
+               MOVE WKS-TOANU    TO IMP-TOTAL
+               DISPLAY "WRITE" ID-PROYECTO NOMBRE-PROY IMP-TOTAL
                WRITE REG-CAT
                MOVE 1 TO WKS-F-RWRT.
-           
+
            IF WKS-F-RWRT = 0
+		       MOVE WKS-NOM-PROP       TO NOMBRE-PROY
+               MOVE WKS-TOANU        TO IMP-TOTAL
+               DISPLAY "REWRITE" ID-PROYECTO NOMBRE-PROY IMP-TOTAL
                REWRITE REG-CAT.
+			   DISPLAY SPACES.
                
        2270-FIN.
            MOVE WKS-FEC-INCUT  TO WKS-ANOT.
            MOVE WKS-CHECK-FEC  TO WKS-FEC-INCUT.
            PERFORM 2257-ESCRIBE-CORTE-FECHA.
            PERFORM 2255-GENERA-PIE.
+           PERFORM 2259-ACTUALIZA-ARC-CAT.
            DISPLAY "TERMINO EL PROCESO DE REPORTE 1".
 
       *----------------SEGUNDO-REPOTE---------------*
@@ -527,10 +537,10 @@
            AT END MOVE 1      TO WKS-FINR2.
        
        2680-FIN.
-	       MOVE ALL "-" TO WKS-LINEAA.
-		   MOVE WKS-LINEAA TO LINEAC.
-		   WRITE LINEAC AFTER 1.
-		   
+           MOVE ALL "-" TO WKS-LINEAA.
+           MOVE WKS-LINEAA TO LINEAC.
+           WRITE LINEAC AFTER 1.
+           
            MOVE WKS-IMP-FINAL TO WKS-TOT-IMPO.
            MOVE WKS-PIEA      TO LINEAC.
            WRITE LINEAC AFTER 1.
